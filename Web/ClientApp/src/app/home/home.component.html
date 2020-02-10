@@ -1,0 +1,13 @@
+
+
+  <label class="lbl">
+    Поиск:
+    <input type="text" #pattern (input)="search(pattern.value)" />
+  </label>
+<div *ngFor="let i of searchResult.searchGroupResults">
+  <h2> {{i.groupTitle}} </h2>
+  <div class="pl-5"   *ngFor="let n of i.searchContentResults">
+    <h5>{{n.header}}</h5>
+    <p>{{n.content}}</p>
+  </div>
+</div>

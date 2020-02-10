@@ -1,0 +1,15 @@
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div *ngFor="let news of newsCollection" class="border col-3 m-2">
+        <div class="p-2">{{news.category}}</div>
+        <div class="p-4"> {{news.header}} </div>
+        <div class="p-4">{{news.content}}
+        </div>
+        <button [routerLink]="['edit', news.id]" class="btn btn-warning float-right mb-5"> Изменить </button>
+       
+      </div>
+    </div>
+    
+    <button routerLink="create" class="btn btn-primary float-right"> Добавить новость </button>
+  </div>
