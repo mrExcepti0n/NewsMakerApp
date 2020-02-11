@@ -1,15 +1,30 @@
 
   <div class="container">
-    <div class="row justify-content-center">
-      <div *ngFor="let news of newsCollection" class="border col-3 m-2">
-        <div class="p-2">{{news.category}}</div>
-        <div class="p-4"> {{news.header}} </div>
-        <div class="p-4">{{news.content}}
+    <div class="row">
+      <div class="col-12">
+        <button routerLink="create" class="btn btn-primary float-right"> Добавить новость </button>
+        <div class="float-right mr-5">
+          <label>
+            Выберите категорию:
+            <select [(ngModel)]="selectedCategory">
+              <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
+            </select>
+          </label>
         </div>
-        <button [routerLink]="['edit', news.id]" class="btn btn-warning float-right mb-5"> Изменить </button>
-       
       </div>
     </div>
-    
-    <button routerLink="create" class="btn btn-primary float-right"> Добавить новость </button>
+    <div class="row justify-content-center">
+      <div *ngFor="let news of getNewsCollection()" class="border col-3 m-2">
+        <div class="p-2">{{news.categoryId}}</div>
+        <div class="p-4"> {{news.header}} </div>
+        <div class="p-4">
+          {{news.content}}
+        </div>
+        <button [routerLink]="['edit', news.id]" class="btn btn-warning float-right mb-5"> Изменить </button>
+        <button class="btn btn-danger" (click)="deleteNews(news.id)"> Удалить </button>
+
+      </div>
+    </div>
+
+
   </div>

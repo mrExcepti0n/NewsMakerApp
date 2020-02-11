@@ -12,7 +12,8 @@ namespace Web.Configuration.Mapper
     {
         public NewsServiceProfiler()
         {
-            CreateMap<News, NewsDto>().ForMember(dst => dst.Category, opt => opt.MapFrom(src => src.Category.Title));
+            CreateMap<News, NewsDto>();
+            CreateMap<NewsDto, News>();
         }
     }
 }

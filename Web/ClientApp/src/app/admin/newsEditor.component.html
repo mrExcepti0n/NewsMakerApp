@@ -5,13 +5,17 @@
     <div class="form-group">
       <label>
         Категория
-        <input type="text" [(ngModel)]="news.category" class="form-control" name="category" />
+        <select [(ngModel)]="news.categoryId" [compareWith]="compareCategory" name="categoryId" class="form-control">
+          <option *ngFor="let cat of categoryDictionary" [ngValue]="cat.key">
+            {{cat.value}}
+          </option>
+        </select>
       </label>
     </div>
     <div class="form-group">
       <label>
         Загаловок
-        <input type="text" [(ngModel)]="news.header" class="form-control" name="content" />
+        <input type="text" [(ngModel)]="news.header" class="form-control" name="header" />
       </label>
     </div>
     <div class="form-group">

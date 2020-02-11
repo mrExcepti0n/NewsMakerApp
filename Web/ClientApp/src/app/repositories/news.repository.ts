@@ -12,8 +12,8 @@ export class NewsRepository {
   }
 
 
-  public getNewsCollection(): NewsDto[] {
-    return this.newsCollection
+  public getNewsCollection(categoryId?: number): NewsDto[] {
+    return this.newsCollection.filter(n => categoryId == null || categoryId == n.categoryId);
   }
 
   public getNews(id: number): NewsDto {
@@ -22,12 +22,16 @@ export class NewsRepository {
     return news;
   }
 
-  public addNews(news: NewsDto) {
-    this.newsService.addNews(news);
+  public removeNews(id: number) {
+    this.newsService.removeNews(id).subscribe(res => this.newsCollection.splice(this.newsCollection.findIndex(n => n.id == id), 1));
   }
 
 
-  public updateNews(news: NewsDto) {
-    this.newsService.updateNews(news).subscribe(res => console.log(res), error => console.log(error));
+  public saveNews(news: NewsDto) {
+    if (news.id == 0) {
+      this.newsService.addNews(news).subscribe(res => { news.id = res; this.newsCollection.push(news); });    
+    } else {
+      this.newsService.updateNews(news).subscribe(res => this.newsCollection.splice(this.newsCollection.findIndex(n => n.id == news.id), 1, news));
+    }
   }
 }

@@ -13,8 +13,8 @@ export class NewsService {
 
   }
 
-  addNews(news: NewsDto): Observable<NewsDto> {
-    return this.http.post<NewsDto>(this.url, news);
+  addNews(news: NewsDto): Observable<number> {
+    return this.http.post<number>(this.url, news);
   }
 
 
@@ -22,6 +22,10 @@ export class NewsService {
     return this.http.put<NewsDto>(this.url, news);
   }
 
+
+  removeNews(id: number): Observable<any> {
+    return this.http.delete(`${this.url}/${id}`);
+  }
 
 
   getNewsCollection(): Observable<NewsDto[]> {

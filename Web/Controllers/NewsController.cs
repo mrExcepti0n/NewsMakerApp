@@ -25,24 +25,42 @@ namespace Web.Controllers
             _mapper = mapper;
         }
 
+
         [HttpGet]
         public async Task<NewsDto[]> Get()
         {
-            var news = await _context.News.Include(n => n.Category).ToListAsync();
+            var news = await _context.News.ToListAsync();
             return _mapper.Map<NewsDto[]>(news);
         }
 
+
+
         [HttpPost]
-        public async Task Add(News news)
+        public async Task<int> Add([FromBody]NewsDto newsDto)
         {
+            var news = _mapper.Map<News>(newsDto);
             _context.Add(news);
+
             await _context.SaveChangesAsync();
+            return news.Id;
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            var news = await _context.Set<News>().FirstOrDefaultAsync(n => n.Id == id);
+
+            if (news != null)
+            {
+                _context.Remove(news);
+                await _context.SaveChangesAsync();
+            }
         }
 
         [HttpPut]
         public async Task Update([FromBody] NewsDto newsDto)
         {
-
             var news = _mapper.Map<News>(newsDto);
             _context.Update<News>(news);
             await _context.SaveChangesAsync();
