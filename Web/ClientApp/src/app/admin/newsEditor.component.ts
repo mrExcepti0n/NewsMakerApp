@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { NewsRepository } from "../repositories/news.repository";
 import { DictionaryService } from "../services/dictionary.service";
 import { KeyValuePair } from "../models/keyValuePair.model";
+import { DictionaryRepository } from "../repositories/dictionary.repository";
 
 @Component({
   templateUrl: 'newsEditor.component.html'
@@ -12,21 +13,21 @@ import { KeyValuePair } from "../models/keyValuePair.model";
 export class NewsEditorComponent {
 
   public news: NewsDto = new NewsDto();
-  public categoryDictionary: KeyValuePair[] = [];
+ 
 
   private isEditing: boolean = false;
 
 
-
-
-  public constructor(private newsRepository: NewsRepository, private dictionaryService: DictionaryService, private router: Router, activeRoute: ActivatedRoute) {
-
-    dictionaryService.getCategoryDictionary().subscribe(res => { console.log(res); this.categoryDictionary = res });
-
+  public constructor(private newsRepository: NewsRepository, private dictionaryRepository: DictionaryRepository, private router: Router, activeRoute: ActivatedRoute) {
     this.isEditing = activeRoute.snapshot.params.mode === 'edit';
     if (this.isEditing) {
       Object.assign(this.news, newsRepository.getNews(activeRoute.snapshot.params.id));
     }
+  }
+
+
+  getCategories(): KeyValuePair[] {
+    return this.dictionaryRepository.getCategoryDictionary();
   }
 
 

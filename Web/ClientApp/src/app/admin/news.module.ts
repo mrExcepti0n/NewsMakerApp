@@ -8,6 +8,7 @@ import { NewsRepository } from "../repositories/news.repository";
 import { NewsService } from "../services/news.service";
 import { NewsEditorComponent } from "./newsEditor.component";
 import { DictionaryService } from "../services/dictionary.service";
+import { DictionaryRepository } from "../repositories/dictionary.repository";
 
 @NgModule({
   imports: [CommonModule,
@@ -18,7 +19,7 @@ import { DictionaryService } from "../services/dictionary.service";
       { path: ':mode/:id', component: NewsEditorComponent }
     ])],
 
-  providers: [NewsRepository, NewsService, DictionaryService],
+  providers: [NewsRepository, NewsService, DictionaryService, DictionaryRepository],
   declarations: [NewsCatalogComponent, NewsEditorComponent]
 })
 export class NewsModule {

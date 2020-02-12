@@ -20,8 +20,10 @@ export class NewsCatalogComponent {
   }
 
 
-  getNewsCollection() {
-    return this.newsRepository.getNewsCollection(this.selectedCategory.key === 0 ? null : this.selectedCategory.key);
+  getNewsCollection(): NewsDto[] {
+    let newsCollection = this.newsRepository.getNewsCollection(this.selectedCategory.key === 0 ? null : this.selectedCategory.key);
+    newsCollection.forEach(el => el.categoryName = this.categoryDictionary.find(c => c.key == el.categoryId).value);
+    return newsCollection;
   }
 
 

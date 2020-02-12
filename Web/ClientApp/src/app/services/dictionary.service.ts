@@ -11,7 +11,7 @@ export class DictionaryService {
   constructor(private http: HttpClient) {
   }
 
-  getCategoryDictionary(): Observable<any> {
+  getCategoryDictionary(): Observable<KeyValuePair[]> {
     let parameters = new HttpParams().set('refType','1');
     return this.http.get<KeyValuePair[]>(this.url, { params: parameters });
   }

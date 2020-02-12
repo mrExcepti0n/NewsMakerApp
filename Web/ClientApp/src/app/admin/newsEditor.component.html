@@ -1,29 +1,39 @@
-{{news.category}}
+  
+
+
+  <div class="bg-info p-2 text-white mb-3" [class.bg-warning]="isEditing" [class.text-dark]="isEditing">
+    <h5> {{isEditing ? "Изменение" : "Создание"}} новости </h5>
+  </div>
 
 
   <form #form="ngForm" (ngSubmit)="saveNews(form)">
     <div class="form-group">
       <label>
         Категория
+      </label>
         <select [(ngModel)]="news.categoryId" [compareWith]="compareCategory" name="categoryId" class="form-control">
-          <option *ngFor="let cat of categoryDictionary" [ngValue]="cat.key">
+          <option *ngFor="let cat of getCategories()" [ngValue]="cat.key">
             {{cat.value}}
           </option>
         </select>
-      </label>
+     
     </div>
     <div class="form-group">
       <label>
         Загаловок
-        <input type="text" [(ngModel)]="news.header" class="form-control" name="header" />
       </label>
+        <input type="text" [(ngModel)]="news.header" class="form-control" name="header" />
+  
     </div>
     <div class="form-group">
       <label>
         Содержимое
-        <input type="text" [(ngModel)]="news.content" class="form-control" name="content" />
       </label>
+        <textarea  [(ngModel)]="news.content" class="form-control" name="content" rows="10">
+        </textarea>
+      
     </div>
 
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <button type="submit" class="btn btn-primary float-right ml-1">Сохранить</button>
+    <button type="reset" class="btn btn-secondary float-right" routerLink="/news"> Назад </button>
   </form>
