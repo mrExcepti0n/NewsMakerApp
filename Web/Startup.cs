@@ -1,5 +1,8 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using Data.Core.Infrastructure;
+using EventBus.RabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -8,7 +11,10 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
+using System;
 using Web.Configuration.Mapper;
+using Web.IntegrationEvents;
 using Web.Services;
 
 namespace Web
@@ -23,13 +29,15 @@ namespace Web
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 
             services.AddSingleton<SearchEngine>();
             RegistryAutoMapper(services);
+            RegistryServiceBus(services);
+
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -43,8 +51,37 @@ namespace Web
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
                 });
+
+            var container = new ContainerBuilder();
+            container.Populate(services);
+
+            return new AutofacServiceProvider(container.Build());
+
         }
 
+        private void RegistryServiceBus(IServiceCollection services)
+        {
+            var subscriptionClientName = Configuration["SubscriptionClientName"];
+
+
+            services.AddSingleton<RabbitMQConnection>(sp =>
+            {
+                var factory = new ConnectionFactory()
+                {
+                    HostName = Configuration["EventBusConnection"],
+                    UserName = Configuration["EventBusUserName"],
+                    Password = Configuration["EventBusPassword"]
+                   
+                };
+
+                return new RabbitMQConnection(factory);
+            });
+
+            services.AddSingleton<EventBusRabbitMQ>();
+
+            services.AddTransient<NewsAddEventHandler>();
+
+        }
 
         private void RegistryAutoMapper(IServiceCollection services)
         {
@@ -94,6 +131,16 @@ namespace Web
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });
+
+
+            ConfigureEventBus(app);
+        }
+
+        private void ConfigureEventBus(IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<EventBusRabbitMQ>();
+
+            eventBus.Subscribe<NewsAddEvent, NewsAddEventHandler>();
         }
     }
 }

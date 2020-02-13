@@ -16,7 +16,7 @@ namespace EventBus.RabbitMQ
 
         private readonly RabbitMQConnection _connection;
 
-       // private readonly IEventBusSubscriptionsManager _subsManager;
+       private readonly SubscriptionsManager _subsManager;
         private readonly ILifetimeScope _autofac;
         private readonly string AUTOFAC_SCOPE_NAME = "billing_event_bus";
         private readonly int _retryCount;
@@ -24,24 +24,25 @@ namespace EventBus.RabbitMQ
         private IModel _consumerChannel;
         private string _queueName;
 
-        public EventBusRabbitMQ(RabbitMQConnection connection, ILifetimeScope autofac,/* IEventBusSubscriptionsManager subsManager,*/     string queueName = null)
+        public EventBusRabbitMQ(RabbitMQConnection connection, ILifetimeScope autofac,  string queueName = null)
         {
 
-            _connection = connection;
-            //_subsManager = subsManager ?? new InMemoryEventBusSubscriptionsManager();
-            _queueName = queueName /*?? ConfigurationManager.AppSettings["SubscriptionClientName"]*/;
+            _connection = connection;           
+            _queueName = "NewsQ";
+
+            _subsManager = new SubscriptionsManager();
 
             _autofac = autofac;
             SetConsumerChannel();
         }
 
-        public void Publish(IntegrationEvent @event, string correlationId = null)
+        public void Publish(IntegrationEvent @event)
         {
-            if (!_persistentConnection.IsConnected)
+            if (!_connection.IsConnected)
             {
-                _persistentConnection.TryConnect();
+                _connection.TryConnect();
             }
-            using (var channel = _persistentConnection.CreateModel())
+            using (var channel = _connection.CreateModel())
             {
                 var eventName = @event.GetType().Name;
                 channel.ExchangeDeclare(exchange: ExchangeName, type: "direct", durable: true);
@@ -61,7 +62,7 @@ namespace EventBus.RabbitMQ
 
         public void Subscribe<T, TH>()
             where T : IntegrationEvent
-            where TH : IntegrationEventHandler<T>
+            where TH : IIntegrationEventHandler<T>
         {
             var eventName = _subsManager.GetEventKey<T>();
             DoInternalSubscription(eventName);
@@ -73,32 +74,19 @@ namespace EventBus.RabbitMQ
             var containsKey = _subsManager.HasSubscriptionsForEvent(eventName);
             if (!containsKey)
             {
-                if (!_persistentConnection.IsConnected)
+                if (!_connection.IsConnected)
                 {
-                    _persistentConnection.TryConnect();
+                    _connection.TryConnect();
                 }
 
-                using (var channel = _persistentConnection.CreateModel())
+                using (var channel = _connection.CreateModel())
                 {
                     channel.QueueBind(queue: _queueName,
                                       exchange: ExchangeName,
                                       routingKey: eventName);
                 }
             }
-        }
-
-        public void Unsubscribe<T, TH>()
-            where TH : IntegrationEventHandler<T>
-            where T : IntegrationEvent
-        {
-            _subsManager.RemoveSubscription<T, TH>();
-        }
-
-        public void UnsubscribeDynamic<TH>(string eventName)
-            where TH : IDynamicIntegrationEventHandler
-        {
-            _subsManager.RemoveDynamicSubscription<TH>(eventName);
-        }
+        }              
 
         public void Dispose()
         {
@@ -140,41 +128,10 @@ namespace EventBus.RabbitMQ
         {
             var eventName = ea.RoutingKey;
             var message = Encoding.UTF8.GetString(ea.Body);
-            var props = ea.BasicProperties;
 
 
-            bool isProcessedEvent;
-
-            if (string.IsNullOrEmpty(props.ReplyTo))
-            {
-                isProcessedEvent = await ProcessEvent(eventName, message);
-            }
-            else
-            {
-                OperationResult result = await ProcessRpcEvent(eventName, message);
-
-                isProcessedEvent = result.Success;
-
-                if (isProcessedEvent)
-                {
-                    var replyProps = _consumerChannel.CreateBasicProperties();
-                    replyProps.CorrelationId = props.CorrelationId;
-                    string response = JsonConvert.SerializeObject(result);
-                    var responseBytes = Encoding.UTF8.GetBytes(response);
-                    _consumerChannel.BasicPublish(exchange: ResponseExchangeName, routingKey: props.ReplyTo,
-                        basicProperties: replyProps, body: responseBytes);
-                }
-            }
-
-            if (isProcessedEvent)
-            {
-                _consumerChannel.BasicAck(ea.DeliveryTag, multiple: false);
-            }
-            else
-            {
-                Thread.Sleep(1000);
-                _consumerChannel.BasicReject(ea.DeliveryTag, true);
-            }
+            bool isProcessedEvent = await ProcessEvent(eventName, message); 
+            _consumerChannel.BasicAck(ea.DeliveryTag, multiple: false);
         }
 
      
@@ -193,74 +150,25 @@ namespace EventBus.RabbitMQ
                 using (var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME))
                 {
                     var subscriptions = _subsManager.GetHandlersForEvent(eventName);
-                    foreach (var subscription in subscriptions)
+                    foreach (var subscriptionType in subscriptions)
                     {
-                        if (subscription.IsDynamic)
-                        {
-                            var handler =
-                                scope.ResolveOptional(subscription.HandlerType) as IDynamicIntegrationEventHandler;
-                            if (handler == null) continue;
-                            dynamic eventData = JObject.Parse(message);
-                            await handler.Handle(eventData);
-                        }
-                        else
-                        {
-                            var handler = scope.ResolveOptional(subscription.HandlerType);
-                            if (handler == null) continue;
-                            var eventType = _subsManager.GetEventTypeByName(eventName);
-                            var integrationEvent =
+                        var handler = scope.ResolveOptional(subscriptionType);
+                        if (handler == null) continue;
+                        var eventType = _subsManager.GetEventTypeByName(eventName);
+                        var integrationEvent =
                                 JsonConvert.DeserializeObject(message, eventType) as IntegrationEvent;
-                            var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
-                            OperationResult result = await (Task<OperationResult>)
-                                concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
-                        }
-                    }
+                        var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
+                        await (Task) concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
+                     }
+                    
                 }
             }
             catch (Exception ex)
             {
-                _logger.Fatal(ex, "Ошибка при обработки очереди");
-                return true;
+                return false;
             }
+
             return true;
-        }
-
-
-        private async Task<OperationResult> ProcessRpcEvent(string eventName, string message)
-        {
-            if (!_subsManager.HasSubscriptionsForEvent(eventName))
-            {
-                return OperationResult.CreateErrorResult();
-            }
-
-            try
-            {
-                using (var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME))
-                {
-                    var subscriptions = _subsManager.GetHandlersForEvent(eventName).ToArray();
-
-                    if (subscriptions.Length > 1)
-                    {
-                        throw new Exception("Подписчиков > 1");
-                    }
-
-                    var subscription = subscriptions.Single();
-                    var handler = scope.ResolveOptional(subscription.HandlerType);
-                    if (handler == null) return OperationResult.CreateErrorResult();
-                    var eventType = _subsManager.GetEventTypeByName(eventName);
-                    var integrationEvent =
-                        JsonConvert.DeserializeObject(message, eventType) as IntegrationEvent;
-                    var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
-                    OperationResult result = await (Task<OperationResult>)concreteType.GetMethod("Handle")
-                        .Invoke(handler, new object[] { integrationEvent });
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Fatal(ex, "Ошибка при обработки очереди");
-            }
-            return OperationResult.CreateErrorResult();
         }
     }
 }

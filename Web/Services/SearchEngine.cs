@@ -21,6 +21,10 @@ namespace Web.Services
            // var result = _client.IndexMany<News>(dataCollection);          
         }
 
+        public async Task Add(News news)
+        {
+            await _client.IndexDocumentAsync(news);
+        }
 
         public IReadOnlyCollection<News> Search(string pattern)
         {

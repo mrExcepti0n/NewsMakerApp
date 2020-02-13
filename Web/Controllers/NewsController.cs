@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.Core.Infrastructure;
 using Data.Core.Model;
+using EventBus.RabbitMQ;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.IntegrationEvents;
 using Web.Models;
 using Web.Services;
 
@@ -19,10 +21,13 @@ namespace Web.Controllers
 
         private DataContext _context;
         private IMapper _mapper;
-        public NewsController(DataContext context, IMapper mapper)
+        private EventBusRabbitMQ _eventBus;
+        public NewsController(DataContext context, IMapper mapper, EventBusRabbitMQ eventBusRabbitMQ)
         {
             _context = context;
             _mapper = mapper;
+
+            _eventBus = eventBusRabbitMQ;
         }
 
 
@@ -42,6 +47,8 @@ namespace Web.Controllers
             _context.Add(news);
 
             await _context.SaveChangesAsync();
+            _eventBus.Publish(new NewsAddEvent(news));
+
             return news.Id;
         }
 
