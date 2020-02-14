@@ -5,9 +5,9 @@ import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryService } from "../services/dictionary.service";
 
 @Component({
-  templateUrl: 'newsCatalog.component.html'
+  templateUrl: 'newsAdminCatalog.component.html'
 })
-export class NewsCatalogComponent {  
+export class NewsAdminCatalogComponent {  
 
   public categoryDictionary: KeyValuePair[];
 

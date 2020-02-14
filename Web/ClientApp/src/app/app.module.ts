@@ -21,7 +21,7 @@ import { HomeComponent } from './home/home.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'news', loadChildren: './admin/news.module#NewsModule' }
+      { path: 'admin/news', loadChildren: './admin/newsAdmin.module#NewsAdminModule' }
     ])
   ],
   providers: [],

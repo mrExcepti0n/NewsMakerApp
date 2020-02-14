@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="float-right mr-5">
+        <label>
+          Выберите категорию:
+          <select [(ngModel)]="selectedCategory">
+            <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div *ngFor="let news of getNewsCollection()" class="border col-3 m-2 p-0">
+      <div>
+        {{news.categoryName}}       
+      </div>
+      <div class="p-4"> {{news.header}} </div>
+      <div class="p-4">
+        {{news.content}}
+      </div>
+    </div>
+  </div>
+</div>
+
+

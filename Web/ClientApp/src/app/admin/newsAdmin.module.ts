@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { NewsCatalogComponent } from "./newsCatalog.component";
+import { NewsAdminCatalogComponent } from "./newsAdminCatalog.component";
 import { RouterModule } from "@angular/router";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
@@ -14,14 +14,14 @@ import { DictionaryRepository } from "../repositories/dictionary.repository";
   imports: [CommonModule,
     HttpClientModule, FormsModule,
     RouterModule.forChild([
-      { path: '', component: NewsCatalogComponent },
+      { path: '', component: NewsAdminCatalogComponent },
       { path: ':mode', component: NewsEditorComponent },
       { path: ':mode/:id', component: NewsEditorComponent }
     ])],
 
   providers: [NewsRepository, NewsService, DictionaryService, DictionaryRepository],
-  declarations: [NewsCatalogComponent, NewsEditorComponent]
+  declarations: [NewsAdminCatalogComponent, NewsEditorComponent]
 })
-export class NewsModule {
+export class NewsAdminModule {
 
 }

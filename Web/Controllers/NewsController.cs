@@ -16,7 +16,7 @@ using Web.Services;
 namespace Web.Controllers
 {
     [Route("api/[controller]")]
-    public class NewsController : Controller 
+    public class NewsController : Controller
     {
 
         private DataContext _context;
@@ -38,6 +38,13 @@ namespace Web.Controllers
             return _mapper.Map<NewsDto[]>(news);
         }
 
+
+        [HttpGet("{id}")]
+        public async Task<NewsDto> Get(int id)
+        {
+            var news = await _context.News.SingleOrDefaultAsync(n => n.Id == id);
+            return _mapper.Map<NewsDto>(news);
+        }
 
 
         [HttpPost]
@@ -63,6 +70,10 @@ namespace Web.Controllers
                 _context.Remove(news);
                 await _context.SaveChangesAsync();
             }
+
+            _eventBus.Publish(new NewsRemoveEvent(id));
+
+
         }
 
         [HttpPut]
@@ -71,6 +82,8 @@ namespace Web.Controllers
             var news = _mapper.Map<News>(newsDto);
             _context.Update<News>(news);
             await _context.SaveChangesAsync();
+
+            _eventBus.Publish(new NewsUpdateEvent(news));
         }
     }
 }

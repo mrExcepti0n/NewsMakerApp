@@ -3,7 +3,6 @@ import { NewsDto } from "../models/news.model";
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { NewsRepository } from "../repositories/news.repository";
-import { DictionaryService } from "../services/dictionary.service";
 import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryRepository } from "../repositories/dictionary.repository";
 
@@ -39,7 +38,7 @@ export class NewsEditorComponent {
   public saveNews(form: NgForm) {
     if (form.valid) {
       this.newsRepository.saveNews(this.news);    
-      this.router.navigateByUrl("");
+      this.router.navigateByUrl("/admin/news");
     }
   }
 

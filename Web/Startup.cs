@@ -80,6 +80,8 @@ namespace Web
             services.AddSingleton<EventBusRabbitMQ>();
 
             services.AddTransient<NewsAddEventHandler>();
+            services.AddTransient<NewsRemoveEventHandler>();
+            services.AddTransient<NewsUpdateEventHandler>();
 
         }
 
@@ -141,6 +143,8 @@ namespace Web
             var eventBus = app.ApplicationServices.GetRequiredService<EventBusRabbitMQ>();
 
             eventBus.Subscribe<NewsAddEvent, NewsAddEventHandler>();
+            eventBus.Subscribe<NewsRemoveEvent, NewsRemoveEventHandler>();
+            eventBus.Subscribe<NewsUpdateEvent, NewsUpdateEventHandler>();
         }
     }
 }

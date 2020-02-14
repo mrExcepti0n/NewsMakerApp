@@ -1,13 +1,40 @@
 
 
-  <label class="lbl">
-    Поиск:
-    <input type="text" #pattern (input)="search(pattern.value)" />
-  </label>
-<div *ngFor="let i of searchResult.searchGroupResults">
-  <h2> {{i.groupTitle}} </h2>
-  <div class="pl-5"   *ngFor="let n of i.searchContentResults">
-    <h5>{{n.header}}</h5>
-    <p>{{n.content}}</p>
-  </div>
+ <div class="container">
+   <div class="row">
+     <div class="col-8">
+
+       <div class="form-group">
+         <label class="lbl">
+           Ваш запрос:
+         </label>
+         <input class="form-control" type="text" #pattern (input)="search(pattern.value)" />
+       </div>
+
+       <div *ngFor="let i of searchResult.searchGroupResults">
+         <h2> {{i.groupTitle}} </h2>
+         <div class="pl-5" *ngFor="let n of i.searchContentResults">
+           <h5>{{n.header}}</h5>
+           <p>{{n.content}}</p>
+         </div>
+       </div>
+
+
+     </div>
+     <div class="col-4 text-right">
+       <p class="text-center">Настройки</p>
+       <div class="form-group">
+         <label>Где искать:</label>
+         <p>
+           <input type="checkbox" />
+           Заголовок
+         </p>
+         <p>
+           <input type="checkbox" />
+           Содержимое
+         </p>
+       </div>
+     </div>
+   </div>
 </div>
+
