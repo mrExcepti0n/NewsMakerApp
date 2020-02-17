@@ -39,6 +39,15 @@ namespace Web.Controllers
         }
 
 
+
+        [HttpGet("[action]")]
+        public async Task<int> Count()
+        {
+            return await _context.News.CountAsync();
+        }
+
+
+
         [HttpGet("{id}")]
         public async Task<NewsDto> Get(int id)
         {

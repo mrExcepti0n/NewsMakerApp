@@ -28,9 +28,13 @@ export class NewsService {
   }
 
 
-  getNewsCollection(): Observable<NewsDto[]> {
+  getNewsCollection(categeryId: number = null): Observable<NewsDto[]> {
     var res = this.http.get<NewsDto[]>(this.url);
     return res;
+  }
+
+  getNewsCount(categoryId: number = null): Observable<number> {
+    return this.http.get<number>(this.url + '/Count');
   }
 
   getNews(id: number): Observable<NewsDto> {
