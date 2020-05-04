@@ -13,7 +13,7 @@ export class NewsRepository {
 
 
   public getNewsCollection(categoryId?: number): NewsDto[] {
-    return this.newsCollection.filter(n => categoryId == null || categoryId == n.categoryId);
+    return this.newsCollection.filter(n => categoryId === null || categoryId === n.categoryId);
   }
 
   public getNews(id: number): NewsDto {
