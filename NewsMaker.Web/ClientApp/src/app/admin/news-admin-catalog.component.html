@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <button routerLink="create" class="btn btn-primary float-right"> Добавить новость </button>
+      <div class="float-right mr-5">
+        <label>
+          Выберите категорию:
+          <select [(ngModel)]="selectedCategory">
+            <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="news-catalog">
+
+
+    <ng-template ngFor let-news [ngForOf]="getNewsCollection()" let-i="index">
+      <div class="news">
+        <div class="news-category">
+          <span>
+            {{news.categoryName}}
+          </span>
+          <button title="изменить" class="btn btn-sm" [routerLink]="['edit', news.id]">
+            <i class="fa fa-pencil-square-o"></i>
+          </button>
+          <button title="удалить" class="btn btn-sm " (click)="deleteNews(news.id)">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        <div class="news-image" *ngIf="i==0">
+          <p> News image </p>
+        </div>
+
+        <div class="news-header p-4" (click)="getNewsDetail(news.id)"> {{news.header}} </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

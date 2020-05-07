@@ -4,8 +4,10 @@ import { NewsRepository } from "../repositories/news.repository";
 import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryService } from "../services/dictionary.service";
 
+
 @Component({
-  templateUrl: 'newsAdminCatalog.component.html'
+  templateUrl: 'news-admin-catalog.component.html'  ,
+  styleUrls: ['../news/news-catalog.component.css', 'news-admin-catalog.component.css']
 })
 export class NewsAdminCatalogComponent {  
 

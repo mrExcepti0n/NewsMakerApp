@@ -1,0 +1,28 @@
+.comment_list {
+   margin: 5px 0;
+}
+
+  .comment_list .comment {
+      margin: 1em;
+  }
+
+    .comment_list .comment-main  {
+      border-left: 2px groove blue;
+      padding-left: 5px;
+    }
+
+  .comment_list .comment-reply-link {
+    background: #EEE;
+    padding: 0.4em;
+    border-radius: 5px;
+  }
+
+.comment-author {
+   color: blue;
+   font-weight: bold;
+}
+
+.comment-posted {
+    color: gray;
+    padding: 15px;
+}

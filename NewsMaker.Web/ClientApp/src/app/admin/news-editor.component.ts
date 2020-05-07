@@ -1,18 +1,22 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { NewsDto } from "../models/news.model";
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { NewsRepository } from "../repositories/news.repository";
 import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryRepository } from "../repositories/dictionary.repository";
+import { EditorComponent } from "../shared/components/editor.component";
 
 @Component({
-  templateUrl: 'newsEditor.component.html'
+  templateUrl: 'news-editor.component.html',
+  styleUrls: ['news-editor.component.css']
 })
 export class NewsEditorComponent {
 
   public news: NewsDto = new NewsDto();
  
+
+  @ViewChild(EditorComponent) newsEditor: EditorComponent;
 
   private isEditing: boolean = false;
 
@@ -31,13 +35,17 @@ export class NewsEditorComponent {
 
 
   compareCategory(item1, item2) {
-    return item1 && item2 && item1 == item2;
+    return item1 && item2 && item1 === item2;
   }
 
 
   public saveNews(form: NgForm) {
     if (form.valid) {
-      this.newsRepository.saveNews(this.news);    
+
+      this.news.content = this.newsEditor.content;
+      this.newsRepository.saveNews(this.news);
+
+
       this.router.navigateByUrl("/admin/news");
     }
   }

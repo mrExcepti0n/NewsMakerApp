@@ -1,0 +1,18 @@
+
+<div class="comment_list">
+
+  <div *ngFor="let comment of Comments; let i = index" class="comment" >
+    <div class="comment-main">
+      <p>
+        <span class="comment-author">{{comment.author}}</span>
+        <span class="comment-posted">{{comment.posted | dateAgo}}</span>
+      </p>
+      <div [innerHTML]="comment.content"></div>
+    </div>
+    <div class="comment-action">
+      <button class="btn btn-link text-secondary" (click)="showTextEditor(i)">Ответить</button>
+      <app-reply-form [parentIdChain]="comment.idChain" *ngIf="togglePanel[i]" (onPosted)="addNewComment($event)"></app-reply-form>
+    </div>
+    <app-reply-list [(Comments)]="comment.replies" *ngIf="comment.replies && comment.replies.length > 0"  (onReplyPosted)="addNewComment($event)"></app-reply-list>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="float-right mr-5">
+        <label>
+          Выберите категорию:
+          <select [(ngModel)]="selectedCategory" (chnage)="loadNewsCollection()">
+            <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="news-catalog">
+
+
+    <ng-template ngFor let-news [ngForOf]="newsCollection" let-i="index">
+      <div class="news">
+        <div class="news-category">
+          {{news.categoryName}}
+        </div>
+
+        <div class="news-image" *ngIf="i==0"  >
+           <p> News image </p>
+          </div>
+
+        <div class="news-header p-4"  (click)="getNewsDetail(news.id)"> {{news.header}} </div>
+      </div>
+  </ng-template>
+
+
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="btn-group float-right">
+      <button class="btn btn-outline-primary" *counter="let pageNumber of paginator.totalPages"> {{pageNumber}} </button>
+    </div>
+
+    <div class="float-right mr-1">
+      <select (value)="paginator.elementPerPage" (change)="changePageSize($event.target.value)" class="form-control">
+        <option value="3"> 3 per page</option>
+        <option value="4"> 4 per page</option>
+        <option value="5"> 5 per page </option>
+        <option value="6"> 6 per page</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
+
+

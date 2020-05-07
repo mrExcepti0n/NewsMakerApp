@@ -1,0 +1,13 @@
+
+  <app-simple-editor >
+
+  </app-simple-editor>
+
+  <div class="comment-action row justify-content-end">
+    <div class="input-group col-6">
+      <input type="text" class="form-control w-50" placeholder="Введите имя" [(ngModel)]="authorName">
+      <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="button" (click)="postComment()">Отправить</button>
+      </div>
+    </div>
+  </div>

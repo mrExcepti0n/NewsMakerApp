@@ -1,13 +1,24 @@
 
 
   <div>
-    <div>
-      {{news.header}}
-    </div>
-    <div>
-      {{news.content}}
-    </div>
 
-    <button class="btn btn-secondary float-right" routerLink="/news"> Назад </button>
+
+    <div class="p-2">
+      <button class="btn btn-secondary float-right" routerLink="/news"> Назад </button>
+      <h3>
+        {{news.header}}
+      </h3>
+    </div>
+    <div [innerHTML]="news.content">
+
+    </div>
+    <hr class="pb-3"/>
+
+    <app-comments>
+    </app-comments>
+
+
+
+
   </div>
 

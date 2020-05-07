@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
 import { NewsDto } from "../models/news.model";
-import { NewsRepository } from "../repositories/news.repository";
 import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryService } from "../services/dictionary.service";
 import { Router } from "@angular/router";
@@ -10,7 +9,8 @@ import { map } from 'rxjs/operators';
 import { Paginator } from "../models/paginator.model";
 
 @Component({
-  templateUrl: 'newsCatalog.component.html'
+  templateUrl: 'news-catalog.component.html',
+  styleUrls: ['news-catalog.component.css']
 })
 export class NewsCatalogComponent {
 

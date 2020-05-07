@@ -1,18 +1,17 @@
 import { NgModule } from "@angular/core";
-import { NewsAdminCatalogComponent } from "./newsAdminCatalog.component";
+import { NewsAdminCatalogComponent } from "./news-admin-catalog.component";
 import { RouterModule } from "@angular/router";
 import { HttpClientModule } from "@angular/common/http";
-import { FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
 import { NewsRepository } from "../repositories/news.repository";
 import { NewsService } from "../services/news.service";
-import { NewsEditorComponent } from "./newsEditor.component";
+import { NewsEditorComponent } from "./news-editor.component";
 import { DictionaryService } from "../services/dictionary.service";
 import { DictionaryRepository } from "../repositories/dictionary.repository";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
-  imports: [CommonModule,
-    HttpClientModule, FormsModule,
+  imports: [SharedModule,
+    HttpClientModule,
     RouterModule.forChild([
       { path: '', component: NewsAdminCatalogComponent },
       { path: ':mode', component: NewsEditorComponent },

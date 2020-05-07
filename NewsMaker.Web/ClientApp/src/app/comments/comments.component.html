@@ -1,0 +1,8 @@
+<h5>КОММЕНТАРИИ</h5>
+<app-reply-form (onPosted)="addNewComment($event)">
+
+</app-reply-form>
+
+<app-reply-list [(Comments)]="Comments" (onReplyPosted)="addNewReply($event)">
+
+</app-reply-list>
