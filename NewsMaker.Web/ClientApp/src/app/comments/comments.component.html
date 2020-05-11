@@ -1,5 +1,5 @@
 <h5>КОММЕНТАРИИ</h5>
-<app-reply-form (onPosted)="addNewComment($event)">
+<app-reply-form (onPosted)="addNewComment($event)" [postId]="postId" *ngIf="postId">
 
 </app-reply-form>
 

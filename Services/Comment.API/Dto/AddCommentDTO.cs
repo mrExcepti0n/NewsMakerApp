@@ -14,7 +14,7 @@ namespace Comment.API.Dto
 
         public Author Author { get; set; }
 
-        public string ReplyId { get; set; }
+        public string ParentId { get; set; }
         public int PostId { get; set; }
     }
 }

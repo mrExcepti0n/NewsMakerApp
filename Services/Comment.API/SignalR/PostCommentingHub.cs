@@ -19,6 +19,5 @@ namespace Comment.API.SignalR
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, (string) Context.Items["newsId"]);
             await base.OnDisconnectedAsync(ex);
         }
-        
     }
 }

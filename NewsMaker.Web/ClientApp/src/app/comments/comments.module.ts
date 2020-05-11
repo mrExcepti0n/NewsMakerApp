@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommentsComponent } from "./comments.component";
-import { CommentsService } from "./comments.service";
+import { CommentsService } from "./services/comments.service";
 import { SharedModule } from "../shared/shared.module";
 import { ReplyListComponent } from "./reply-list.component";
 import { ReplyComponent } from "./reply.component";

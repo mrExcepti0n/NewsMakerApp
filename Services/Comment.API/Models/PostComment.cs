@@ -20,7 +20,7 @@ namespace Comment.API.Models
 
         public Author Author { get; set; }
 
-        public string ReplyId{ get; set; } 
+        public List<string> Parents { get; set; } = new List<string>();
 
         public int PostId { get; set; }
     }

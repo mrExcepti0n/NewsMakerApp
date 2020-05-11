@@ -24,9 +24,26 @@ namespace Comment.API.Infrastructure
 
         }
 
+        public async Task<PostComment> GetCommentAsync(string id)
+        {
+            var query = _context.PostComments.Find(comment => comment.Id == id);
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<PostComment> AddCommentAsync(AddCommentDTO item)
         {
-            var postComment = new PostComment { PostedDate = item.PostedDate, Content = item.Content, PostId = item.PostId, Author = item.Author, ReplyId = item.ReplyId };
+            List<string> parents = new List<string>();
+            if (!string.IsNullOrWhiteSpace(item.ParentId)) {
+                var parentComment = await GetCommentAsync(item.ParentId);
+
+                parents = parentComment.Parents.ToList();
+                parents.Add(parentComment.Id);
+            }
+
+            var postComment = new PostComment { PostedDate = item.PostedDate, Content = item.Content, PostId = item.PostId, Author = item.Author, Parents = parents };
+
+
+
             await _context.PostComments.InsertOneAsync(postComment);
             return postComment;
         }

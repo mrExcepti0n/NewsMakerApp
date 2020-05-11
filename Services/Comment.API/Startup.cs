@@ -39,6 +39,16 @@ namespace Comment.API
             services.AddTransient<CommentContext>();
             services.AddTransient<ICommentRepository, CommentRepository>();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +59,7 @@ namespace Comment.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseRouting();
 
             app.UseAuthorization();

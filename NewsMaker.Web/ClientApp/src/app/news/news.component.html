@@ -14,7 +14,7 @@
     </div>
     <hr class="pb-3"/>
 
-    <app-comments>
+    <app-comments [postId]="news.id" *ngIf="news.id">
     </app-comments>
 
 

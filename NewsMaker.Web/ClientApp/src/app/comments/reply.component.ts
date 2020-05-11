@@ -1,8 +1,10 @@
 import { Component, Input, ViewChild, Output, EventEmitter } from "@angular/core";
-import { CommentsService } from "./comments.service";
+import { CommentsService } from "./services/comments.service";
 import { NewPostComment } from "./models/new-post-comment";
 import { SimpleEditorComponent } from "../shared/components/simple-editor.component";
-
+import { PostComment } from "./models/post-comment";
+import { Author } from "./models/author.model";
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-reply-form',
@@ -14,8 +16,11 @@ export class ReplyComponent {
   @ViewChild(SimpleEditorComponent) commentEditor: SimpleEditorComponent;
 
 
-  @Input('parentIdChain')
-  parentIdChain: string[] = [];
+  @Input('parentId')
+  parentId: string = null;
+
+  @Input('postId')
+  postId: number;
 
   authorName: '';
 
@@ -24,7 +29,10 @@ export class ReplyComponent {
   }
 
   postComment() {
-    const comment = new NewPostComment(this.commentContent, new Date(Date.now()), this.authorName, this.parentIdChain.slice());
+
+    let author: Author = { id: uuid(), name: this.authorName };
+
+    const comment = new NewPostComment(this.postId, this.commentContent, new Date(Date.now()), author, this.parentId);
 
     this.clearInputs();
     this.commentService.postComment(comment)
@@ -34,7 +42,7 @@ export class ReplyComponent {
   }
 
 
-  @Output() onPosted = new EventEmitter<NewPostComment>();
+  @Output() onPosted = new EventEmitter<PostComment>();
 
   private get commentContent(): string {
     return this.commentEditor.content;

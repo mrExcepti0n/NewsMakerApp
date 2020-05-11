@@ -6,9 +6,10 @@ import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { FormsModule } from "@angular/forms";
 import { SimpleEditorComponent } from "./components/simple-editor.component";
 import { PagingComponent } from "./components/paging.component";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
-  imports: [CommonModule, CKEditorModule, FormsModule],
+  imports: [CommonModule, CKEditorModule, FormsModule, HttpClientModule],
   declarations: [
     DateAgoPipe,
     EditorComponent,

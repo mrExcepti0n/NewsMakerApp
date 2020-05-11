@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { PostComment } from "./models/post_comment";
+import { PostComment } from "./models/post-comment";
 import { NewPostComment } from "./models/new-post-comment";
 
 @Component({
