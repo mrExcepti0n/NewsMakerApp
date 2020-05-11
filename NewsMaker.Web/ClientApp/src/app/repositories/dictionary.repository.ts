@@ -1,19 +1,33 @@
-import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryService } from "../services/dictionary.service";
 import { Injectable } from "@angular/core";
+import { KeyValue } from "@angular/common";
+import { Subject } from "rxjs";
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+}) 
 export class DictionaryRepository {
 
-  private categoryDictionary: KeyValuePair[] = [];
+  public categoryDictionary: KeyValue<number, string>[] = [];
+
+  private dictionaryLoadedSource = new Subject();
+  dictionaryLoaded$ = this.dictionaryLoadedSource.asObservable();
+  isReady: boolean = false;
+
 
   constructor(private dictionaryService: DictionaryService) {
-    dictionaryService.getCategoryDictionary().subscribe(res => this.categoryDictionary = res);
+    this.load();
   }
 
 
-  getCategoryDictionary() {
-    return this.categoryDictionary;
+  load() {
+    this.dictionaryService.getCategoryDictionary()
+      .subscribe(res => {
+        this.categoryDictionary = res;
+        this.isReady = true;
+        this.dictionaryLoadedSource.next();
+      });
   }
+
 }

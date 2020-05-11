@@ -1,59 +1,71 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NewsDto } from "../models/news.model";
-import { KeyValuePair } from "../models/keyValuePair.model";
-import { DictionaryService } from "../services/dictionary.service";
-import { Router } from "@angular/router";
 import { NewsService } from "../services/news.service";
-import { forkJoin } from "rxjs";
-import { map } from 'rxjs/operators';
-import { Paginator } from "../models/paginator.model";
+import { PagingService } from "../shared/services/paging.service";
+import { KeyValue } from "@angular/common";
+import { Dictionary } from "../models/dictionary.model";
+import { DictionaryRepository } from "../repositories/dictionary.repository";
 
 @Component({
   templateUrl: 'news-catalog.component.html',
-  styleUrls: ['news-catalog.component.css']
+  styleUrls: ['news-catalog.component.css'],
+  providers: [PagingService]
 })
-export class NewsCatalogComponent {
+export class NewsCatalogComponent implements OnInit {
 
-  public categoryDictionary: KeyValuePair[] = [];
+  public categoryDictionary: KeyValue<number, string>[] = [];
 
-  public selectedCategory: KeyValuePair = new KeyValuePair(0, 'Все');
-  public paginator: Paginator = new Paginator();
+  public selectedCategory: KeyValue<number, string> = new Dictionary<number, string>(0, 'Все');
+
+
+  private get selectedCategoryKey(): number {
+    return this.selectedCategory.key === 0 ? null : this.selectedCategory.key;;
+  }
 
   public newsCollection: NewsDto[] = [];
 
-  constructor(private newsService: NewsService, dictionaryService: DictionaryService, private router: Router)
+  constructor(private newsService: NewsService, private dictionaryRepository: DictionaryRepository, private pagingService: PagingService)
   {
-    newsService.getNewsCount()
-      .subscribe(res => { console.log(res); this.paginator = new Paginator(res) });
+    this.categoryDictionary.push(this.selectedCategory);
+  }
 
-    let news = newsService.getNewsCollection();
-    let categories = dictionaryService.getCategoryDictionary().pipe(map(res => { res.unshift(this.selectedCategory); this.categoryDictionary = res; return res; }));
+  ngOnInit(): void {
+    ///todo join methods
+    this.getCategories();
+    this.getNewsCount();
+    this.loadNewsCollection();
 
-    forkJoin([news, categories]).subscribe(results => {
-      this.fillCategoryTitle(results[0]);
-      this.newsCollection = results[0];
-    })
+    this.pagingService.currentPageChanged$.subscribe(() => this.loadNewsCollection());
+    this.pagingService.elementsPerPageChanged$.subscribe(() => this.loadNewsCollection());
+  }
+
+  private getNewsCount() {
+    this.newsService.getNewsCount(this.selectedCategoryKey)
+                    .subscribe(res => { this.pagingService.totalItemsCount = res; });
+  }
+
+  private getCategories() {
+
+    if (this.dictionaryRepository.isReady)
+      this.categoryDictionary = this.categoryDictionary.concat(this.dictionaryRepository.categoryDictionary);
+    else
+      this.dictionaryRepository.dictionaryLoaded$.subscribe(x => {
+        this.categoryDictionary = this.categoryDictionary.concat(this.dictionaryRepository.categoryDictionary);
+      });
   }
 
   private fillCategoryTitle(newsCollection: NewsDto[]) {
-    newsCollection.forEach(el => el.categoryName = this.categoryDictionary.find(c => c.key == el.categoryId).value);
+    newsCollection.forEach(el => el.categoryName = this.categoryDictionary.find(c => c.key === el.categoryId).value);
   }
 
   loadNewsCollection() {
-    this.newsService.getNewsCollection(this.selectedCategory.key === 0 ? null : this.selectedCategory.key)
-      .subscribe(res => { this.fillCategoryTitle(res); this.newsCollection = res; });
-  }
-
-  deleteNews(id: number) {
-    this.newsService.removeNews(id).subscribe();
-  }
-
-  changePageSize(size: number) {
-    this.paginator.elementPerPage = size;
+    this.newsService.getNewsCollection(this.selectedCategoryKey, this.pagingService.skip, this.pagingService.take)
+                    .subscribe(res => { this.fillCategoryTitle(res); this.newsCollection = res; });
   }
 
 
-  getNewsDetail(id: number) {    
-    this.router.navigateByUrl(`news/${id}`);
+  changeCategory() {
+    this.getNewsCount();
+    this.loadNewsCollection();
   }
 }

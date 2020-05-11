@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
 using Domain.Core.Model;
+using Infrastructure.Data.Infrastructure;
 using Infrastructure.EventBus.RabbitMQ;
+using LinqKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using NewsMaker.Web.IntegrationEvents;
 using NewsMaker.Web.Models;
-using Infrastructure.Data.Infrastructure;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NewsMaker.Web.Controllers
 {
@@ -31,18 +29,37 @@ namespace NewsMaker.Web.Controllers
 
 
         [HttpGet]
-        public async Task<NewsDto[]> Get()
+        public async Task<NewsDto[]> Get(int? categoryId, int? skip, int? take)
         {
-            var news = await _context.News.ToListAsync();
+            var predicateBuilder = PredicateBuilder.New<News>(true);
+            if (categoryId.HasValue)
+            {
+                predicateBuilder.And(n => n.CategoryId == categoryId);
+            }
+
+            var newsQuery = _context.News.Where(predicateBuilder);
+
+            if (skip.HasValue)
+            {
+                newsQuery = newsQuery.Skip(skip.Value);
+            }
+
+            if (take.HasValue)
+            {
+                newsQuery = newsQuery.Take(take.Value);
+            }
+
+
+            var news = await newsQuery.ToListAsync();
             return _mapper.Map<NewsDto[]>(news);
         }
 
 
 
         [HttpGet("[action]")]
-        public async Task<int> Count()
+        public async Task<int> Count(int? categoryId)
         {
-            return await _context.News.CountAsync();
+            return await _context.News.CountAsync(n => categoryId == null || n.CategoryId == categoryId);
         }
 
 

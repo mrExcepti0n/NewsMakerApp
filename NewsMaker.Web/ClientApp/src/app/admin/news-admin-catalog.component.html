@@ -1,22 +1,22 @@
 <div class="container">
   <div class="row">
-    <div class="col-12">
-      <button routerLink="create" class="btn btn-primary float-right"> Добавить новость </button>
-      <div class="float-right mr-5">
+    <div class="col-12 form-inline justify-content-end">
+      <div class="mr-3">
         <label>
-          Выберите категорию:
-          <select [(ngModel)]="selectedCategory">
+          выберите категорию:
+          <select [(ngModel)]="selectedCategory" (change)="changeCategory($event.target.value)" class="form-control ml-2">
             <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
           </select>
         </label>
       </div>
+      <button routerLink="create" class="btn btn-primary"> Добавить новость </button>
     </div>
   </div>
 
   <div class="news-catalog">
 
 
-    <ng-template ngFor let-news [ngForOf]="getNewsCollection()" let-i="index">
+    <ng-template ngFor let-news [ngForOf]="newsCollection" let-i="index">
       <div class="news">
         <div class="news-category">
           <span>
@@ -38,3 +38,6 @@
     </ng-template>
   </div>
 </div>
+<app-paging>
+
+</app-paging>

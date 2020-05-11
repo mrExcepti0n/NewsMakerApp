@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-12 border p-2 rounded paging-area form-inline">
+
+    <div class="form-group">
+      <label>отображать:</label>
+      <select class="form-control ml-2" (value)="elementsPerPage" (change)="changePageSize($event.target.value)">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+      </select>
+    </div>
+    <label class="mr-2 pr-2 ml-2 pl-2 border-right border-left border-dark">всего: {{totalItems}}</label>
+    <div class="input-group-btn" *ngIf="totalPages > 1">
+      <button class="btn btn-outline-secondary" [disabled]="currentPage == 1" (click)="setPage(currentPage-1)">&laquo; </button>
+      <button class="btn btn-outline-secondary" *ngFor="let pageNumber of pages" [class.active]="pageNumber == currentPage" (click)="setPage(pageNumber)"> {{pageNumber}} </button>
+      <button class="btn btn-outline-secondary" [disabled]="currentPage == totalPages" (click)="setPage(currentPage+1)">&raquo; </button>
+    </div>
+  </div>
+</div>

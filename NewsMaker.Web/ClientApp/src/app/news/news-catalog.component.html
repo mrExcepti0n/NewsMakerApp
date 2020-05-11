@@ -1,16 +1,16 @@
 <div class="container">
   <div class="row">
-    <div class="col-12">
-      <div class="float-right mr-5">
-        <label>
-          Выберите категорию:
-          <select [(ngModel)]="selectedCategory" (chnage)="loadNewsCollection()">
-            <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
-          </select>
-        </label>
+    <div class="col-12 form-inline justify-content-end">
+
+      <div class="form-group">
+        <label class="mr-2"> выберите категорию:</label>
+        <select class="form-control" [(ngModel)]="selectedCategory" (change)="changeCategory($event.target.value)">
+          <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
+        </select>
       </div>
     </div>
   </div>
+
   <div class="news-catalog">
 
 
@@ -24,29 +24,16 @@
            <p> News image </p>
           </div>
 
-        <div class="news-header p-4"  (click)="getNewsDetail(news.id)"> {{news.header}} </div>
+        <div class="news-header p-4 font-weight-bold" > <a [routerLink]="[news.id]"> {{news.header}}</a> </div>
       </div>
   </ng-template>
 
 
 </div>
-<div class="row">
-  <div class="col-12">
-    <div class="btn-group float-right">
-      <button class="btn btn-outline-primary" *counter="let pageNumber of paginator.totalPages"> {{pageNumber}} </button>
-    </div>
 
-    <div class="float-right mr-1">
-      <select (value)="paginator.elementPerPage" (change)="changePageSize($event.target.value)" class="form-control">
-        <option value="3"> 3 per page</option>
-        <option value="4"> 4 per page</option>
-        <option value="5"> 5 per page </option>
-        <option value="6"> 6 per page</option>
-      </select>
-    </div>
+  <app-paging >
 
-  </div>
-</div>
+  </app-paging>
 </div>
 
 

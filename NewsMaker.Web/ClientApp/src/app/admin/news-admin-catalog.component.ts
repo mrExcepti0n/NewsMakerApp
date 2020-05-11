@@ -1,35 +1,18 @@
 import { Component } from "@angular/core";
-import { NewsDto } from "../models/news.model";
-import { NewsRepository } from "../repositories/news.repository";
-import { KeyValuePair } from "../models/keyValuePair.model";
-import { DictionaryService } from "../services/dictionary.service";
+import { NewsCatalogComponent } from "../news/news-catalog.component";
+import { NewsService } from "../services/news.service";
+import { PagingService } from "../shared/services/paging.service";
+import { DictionaryRepository } from "../repositories/dictionary.repository";
 
 
 @Component({
   templateUrl: 'news-admin-catalog.component.html'  ,
-  styleUrls: ['../news/news-catalog.component.css', 'news-admin-catalog.component.css']
+  styleUrls: ['../news/news-catalog.component.css', 'news-admin-catalog.component.css'],
+  providers: [PagingService]
 })
-export class NewsAdminCatalogComponent {  
+export class NewsAdminCatalogComponent extends NewsCatalogComponent{  
 
-  public categoryDictionary: KeyValuePair[];
-
-  public selectedCategory: KeyValuePair = new KeyValuePair(0, 'Все');
-
-  constructor(private newsRepository: NewsRepository, private dictionaryService: DictionaryService) {
-
-    dictionaryService.getCategoryDictionary().subscribe(res => { res.unshift(this.selectedCategory); console.log(this.selectedCategory); this.categoryDictionary = res; console.log(this.categoryDictionary ) });
-    //this.newsCollection = newsRepository.getNewsCollection();
-  }
-
-
-  getNewsCollection(): NewsDto[] {
-    let newsCollection = this.newsRepository.getNewsCollection(this.selectedCategory.key === 0 ? null : this.selectedCategory.key);
-    newsCollection.forEach(el => el.categoryName = this.categoryDictionary.find(c => c.key == el.categoryId).value);
-    return newsCollection;
-  }
-
-
-  deleteNews(id: number) {
-    this.newsRepository.removeNews(id);
+  constructor(newsService: NewsService, dictionaryRepository: DictionaryRepository, pagingService: PagingService) {
+    super(newsService, dictionaryRepository, pagingService);
   }
 }

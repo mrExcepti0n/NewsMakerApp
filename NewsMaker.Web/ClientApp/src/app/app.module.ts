@@ -9,9 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { NewsComponent } from './news/news.component';
 import { NewsCatalogComponent } from './news/news-catalog.component';
 import { NewsService } from './services/news.service';
-import { NewsRepository } from './repositories/news.repository';
 import { DictionaryService } from './services/dictionary.service';
-import { CounterDirective } from './directives/counter.directive';
 import { CommentsModule } from './comments/comments.module';
 import { SharedModule } from './shared/shared.module';
 
@@ -22,8 +20,7 @@ import { SharedModule } from './shared/shared.module';
     NavMenuComponent,
     HomeComponent,
     NewsComponent,
-    NewsCatalogComponent,
-    CounterDirective
+    NewsCatalogComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -38,7 +35,7 @@ import { SharedModule } from './shared/shared.module';
       { path: 'admin/news', loadChildren: './admin/news-admin.module#NewsAdminModule' }
     ])
   ],
-  providers: [NewsService, NewsRepository, DictionaryService],
+  providers: [NewsService,  DictionaryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

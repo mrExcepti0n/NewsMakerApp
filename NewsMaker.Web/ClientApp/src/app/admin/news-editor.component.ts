@@ -1,36 +1,56 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, ViewChild, OnInit } from "@angular/core";
 import { NewsDto } from "../models/news.model";
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
-import { NewsRepository } from "../repositories/news.repository";
-import { KeyValuePair } from "../models/keyValuePair.model";
 import { DictionaryRepository } from "../repositories/dictionary.repository";
 import { EditorComponent } from "../shared/components/editor.component";
+import { KeyValue } from "@angular/common";
+import { NewsService } from "../services/news.service";
+import { Observable } from "rxjs";
 
 @Component({
   templateUrl: 'news-editor.component.html',
   styleUrls: ['news-editor.component.css']
 })
-export class NewsEditorComponent {
+export class NewsEditorComponent implements OnInit {
 
-  public news: NewsDto = new NewsDto();
- 
+  public news: NewsDto;
+  public categories: KeyValue<number, string>[];
 
   @ViewChild(EditorComponent) newsEditor: EditorComponent;
 
   private isEditing: boolean = false;
 
 
-  public constructor(private newsRepository: NewsRepository, private dictionaryRepository: DictionaryRepository, private router: Router, activeRoute: ActivatedRoute) {
-    this.isEditing = activeRoute.snapshot.params.mode === 'edit';
-    if (this.isEditing) {
-      Object.assign(this.news, newsRepository.getNews(activeRoute.snapshot.params.id));
-    }
+  public constructor(private newsService: NewsService, private dictionaryRepository: DictionaryRepository, private router: Router, private activeRoute: ActivatedRoute) {
+   
   }
 
+  ngOnInit(): void {
 
-  getCategories(): KeyValuePair[] {
-    return this.dictionaryRepository.getCategoryDictionary();
+    if (this.dictionaryRepository.isReady)
+      this.categories = this.dictionaryRepository.categoryDictionary;
+    else
+      this.dictionaryRepository.dictionaryLoaded$.subscribe(x => {
+        this.categories = this.dictionaryRepository.categoryDictionary;
+      });
+
+    this.activeRoute.params.subscribe(params => {
+      this.isEditing = params.mode === 'edit';
+      if (this.isEditing) {
+        const newsId = params.id;
+        this.getNews(newsId);
+      } else {
+        this.news = new NewsDto();
+      }
+    });
+  }
+
+  private getNews(id: number) {
+    this.newsService.getNews(id)
+      .subscribe(result => {
+        this.news = result;
+      });
   }
 
 
@@ -43,10 +63,14 @@ export class NewsEditorComponent {
     if (form.valid) {
 
       this.news.content = this.newsEditor.content;
-      this.newsRepository.saveNews(this.news);
 
-
-      this.router.navigateByUrl("/admin/news");
+      let saveNewsEvent: Observable<any>;
+      if (this.news.id == 0) {
+        saveNewsEvent = this.newsService.addNews(this.news);
+      } else {
+        saveNewsEvent = this.newsService.updateNews(this.news);
+      }
+      saveNewsEvent.subscribe(res => { this.router.navigateByUrl("/admin/news"); });     
     }
   }
 

@@ -6,13 +6,13 @@
   </div>
 
 
-  <form #form="ngForm" (ngSubmit)="saveNews(form)">
+  <form #form="ngForm" (ngSubmit)="saveNews(form)" *ngIf="news">
     <div class="form-group">
       <label>
         Категория
       </label>
         <select [(ngModel)]="news.categoryId" [compareWith]="compareCategory" name="categoryId" class="form-control">
-          <option *ngFor="let cat of getCategories()" [ngValue]="cat.key">
+          <option *ngFor="let cat of categories" [ngValue]="cat.key">
             {{cat.value}}
           </option>
         </select>
@@ -27,15 +27,12 @@
     </div>
     <div class="form-group">
       <label>
-        Содержимое
+        Содержимое 
       </label>
 
       <app-editor [inputContent]="news.content">
 
       </app-editor>
-
-      <!--<textarea [(ngModel)]="news.content" class="form-control" name="content" rows="10">
-        </textarea>-->
 
     </div>
 
