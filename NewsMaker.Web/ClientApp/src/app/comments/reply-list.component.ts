@@ -19,23 +19,9 @@ export class ReplyListComponent {
 
 
   addNewComment(comment: NewPostComment) {
-
     this.togglePanel = {};
     this.onReplyPosted.emit(comment);
-    //this.Comments.push(comment);
   }
-
-
-  //addNewReply(comment: PostComment) {
-
-  //  this.onReplyPosted.emit(comment);
-
-  //  //this.Comments.push(comment);
-  //}
-
-
-  //@Output()
-  //onCommentPosted = new EventEmitter<PostComment>();
 
 
   @Output()

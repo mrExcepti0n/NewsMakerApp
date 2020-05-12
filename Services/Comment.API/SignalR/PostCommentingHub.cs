@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Comment.API.Models;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +9,35 @@ namespace Comment.API.SignalR
 {
     public class PostCommentingHub : Hub
     {
-        public override async Task OnConnectedAsync()
+        public override Task OnDisconnectedAsync(Exception exception)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, (string) Context.Items["newsId"]);
-            await base.OnConnectedAsync();
+            return base.OnDisconnectedAsync(exception);
         }
 
-        public override async Task OnDisconnectedAsync(Exception ex)
+        public override Task OnConnectedAsync()
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, (string) Context.Items["newsId"]);
-            await base.OnDisconnectedAsync(ex);
+            return base.OnConnectedAsync();
+        }
+
+        private string GetGroupName(int postId)
+        {
+            return $"post{postId}";
+        }
+
+        public Task PostComment(PostComment comment)
+        {
+            return Clients.Group(GetGroupName(comment.PostId)).SendAsync("Send", comment);
+        }
+
+        public async Task JoinGroup(int postId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(postId));
+        }
+
+        public async Task LeaveGroup(int postId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(postId));
         }
     }
 }
+

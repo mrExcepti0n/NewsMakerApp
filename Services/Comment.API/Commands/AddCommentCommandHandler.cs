@@ -20,9 +20,9 @@ namespace Comment.API.Commands
 
         public async Task<bool> Handle(AddCommentCommand request, CancellationToken cancellationToken)
         {
-            await _hubContext.Clients
-              .Group($"Post{request.Comment.PostId}")
-              .SendAsync("AddComment", request.Comment);
+            string group = $"post{request.Comment.PostId}";
+            await _hubContext.Clients.Group(group)
+              .SendAsync("PostComment", request.Comment);
             return true;
         }
     }

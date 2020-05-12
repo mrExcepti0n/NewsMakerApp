@@ -61,9 +61,13 @@ namespace Comment.API.Controllers
         public async Task<CommentDTO> Post(AddCommentDTO postCommentDto)
         {
             var postComment = await _commentRepository.AddCommentAsync(postCommentDto);
-            await _mediator.Send(new AddCommentCommand(postComment));
 
-            return new CommentDTO(postComment, new List<CommentDTO>());
+            var result = new CommentDTO(postComment, new List<CommentDTO>());
+
+
+            await _mediator.Send(new AddCommentCommand(result));
+
+            return result;
         }
 
     }

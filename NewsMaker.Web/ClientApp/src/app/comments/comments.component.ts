@@ -1,38 +1,42 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, OnDestroy } from "@angular/core";
 import { CommentsService } from "./services/comments.service";
 import { PostComment } from "./models/post-comment";
+import { SignalrService } from "../services/signalr.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-comments',
   templateUrl: 'comments.component.html'
 })
-export class CommentsComponent implements OnInit {
+export class CommentsComponent implements OnInit, OnDestroy {
 
 
   @Input()
   public postId: number;
   public Comments: PostComment[] = [];
 
-  public constructor(private comentsService: CommentsService) {
+  public constructor(private comentsService: CommentsService, private signalrService: SignalrService) {
 
   }
+  private newPostSubscription: Subscription;
+
   ngOnInit(): void {
     this.comentsService.getComments(this.postId)
       .subscribe(res => this.Comments = res);
+
+    this.newPostSubscription = this.signalrService.joinGroup(this.postId)
+      .subscribe(pc => this.addNewComment(pc));
   }
+
+
+  ngOnDestroy(): void {
+    this.signalrService.leaveGroup(this.postId);
+    this.newPostSubscription.unsubscribe();
+  }
+
 
 
   addNewComment(comment: PostComment) {
-    this.addComment(comment);  
-  }
-
-
-  addNewReply(newComment: PostComment) {
-    this.addComment(newComment);
-  }
-
-
-  private addComment(comment: PostComment) {
     if (comment.parents.length === 0) {
       this.Comments.push(comment);
     }
