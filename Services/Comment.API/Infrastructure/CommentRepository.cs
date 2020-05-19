@@ -10,7 +10,7 @@ namespace Comment.API.Infrastructure
 {
     public class CommentRepository : ICommentRepository
     {
-        private readonly CommentContext _context = null;
+        private readonly CommentContext _context;
 
         public CommentRepository(CommentContext context)
         {
@@ -21,7 +21,6 @@ namespace Comment.API.Infrastructure
         {
             var query = _context.PostComments.Find(comment => comment.PostId == postId);
             return await query.ToListAsync();
-
         }
 
         public async Task<PostComment> GetCommentAsync(string id)

@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest 
+
+  nosqldata:
+    image: mongo
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - nosqldata
+
+  elasticsearch:
+   image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+
+
+  newsmaker.web:
+    image: ${DOCKER_REGISTRY-}newsmakerweb
+    build:
+      context: .
+      dockerfile: NewsMaker.Web/Dockerfile
+    depends_on:
+      - sqldata
+      - rabbitmq
+      - elasticsearch
+
+  comment.api:
+    image: ${DOCKER_REGISTRY-}commentapi
+    build:
+      context: .
+      dockerfile: Services/Comment.API/Dockerfile
+    depends_on:
+      - nosqldata
+
+

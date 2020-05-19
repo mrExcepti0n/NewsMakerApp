@@ -16,6 +16,7 @@ using NewsMaker.Web.Configuration.Mapper;
 using NewsMaker.Web.IntegrationEvents;
 using NewsMaker.Web.Services;
 using Infrastructure.Data.Infrastructure;
+using Infrastructure.Data;
 
 namespace NewsMaker.Web
 {
@@ -51,6 +52,7 @@ namespace NewsMaker.Web
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
                 });
+
 
             var container = new ContainerBuilder();
             container.Populate(services);
@@ -134,6 +136,9 @@ namespace NewsMaker.Web
                 }
             });
 
+            var newsContext = app.ApplicationServices.GetRequiredService<NewsContext>();
+            newsContext.Database.Migrate();
+            new NewsContextSeed().Seed(newsContext);
 
             ConfigureEventBus(app);
         }

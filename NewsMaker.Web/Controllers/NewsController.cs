@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewsMaker.Web.IntegrationEvents;
 using NewsMaker.Web.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace NewsMaker.Web.Controllers
         private NewsContext _context;
         private IMapper _mapper;
         private EventBusRabbitMQ _eventBus;
+
         public NewsController(NewsContext context, IMapper mapper, EventBusRabbitMQ eventBusRabbitMQ)
         {
             _context = context;
