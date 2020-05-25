@@ -32,18 +32,18 @@ services:
       - "5672:5672"
 
   elasticsearch:
-   ports:
-    - 9200:9200
-   volumes:
-    - elasticsearch-data:/usr/share/elasticsearch/data
+   ports: 
+      - "9200:9200"
+      - "9300:9300"
+  ## volumes:
+   ## - elasticsearch-data:/usr/share/elasticsearch/data
 
   newsmaker.web:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionStrings__SqlConnection=Server=sqldata;Database=NewsDb;User Id=sa;Password=Pass@word
-      - EventBusConnection=rabbitmq   
-      ##- ConnectionStrings__SqlConnection=Data Source=sqldata;Initial Catalog=News;Persist Security Info=True;User Id=sa;Password=Pass@word
+      - EventBusConnection=rabbitmq
     ports:
       - "5001:80"
     volumes:

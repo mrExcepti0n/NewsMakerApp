@@ -17,6 +17,8 @@ using NewsMaker.Web.IntegrationEvents;
 using NewsMaker.Web.Services;
 using Infrastructure.Data.Infrastructure;
 using Infrastructure.Data;
+using Nest;
+using Domain.Core.Model;
 
 namespace NewsMaker.Web
 {
@@ -38,7 +40,7 @@ namespace NewsMaker.Web
             services.AddSingleton<SearchEngine>();
             RegistryAutoMapper(services);
             RegistryServiceBus(services);
-
+            services.AddElasticsearch(Configuration);
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -151,5 +153,28 @@ namespace NewsMaker.Web
             eventBus.Subscribe<NewsRemoveEvent, NewsRemoveEventHandler>();
             eventBus.Subscribe<NewsUpdateEvent, NewsUpdateEventHandler>();
         }
+    }
+
+    public static class ElasticsearchExtensions
+    {
+        public static void AddElasticsearch( this IServiceCollection services, IConfiguration configuration)
+        {
+            var url = configuration["elasticsearch:url"];
+            var defaultIndex = configuration["elasticsearch:index"];
+
+            var settings = new ConnectionSettings(new Uri(url)).DefaultIndex(defaultIndex);
+            var client = new ElasticClient(settings);
+
+            services.AddSingleton<IElasticClient>(client);
+        }
+    }
+
+
+    public class Person
+    {
+        public int Id { get; set; }
+
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

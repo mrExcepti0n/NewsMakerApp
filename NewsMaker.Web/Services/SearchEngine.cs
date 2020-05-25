@@ -8,13 +8,12 @@ namespace NewsMaker.Web.Services
 {
     public class SearchEngine
     {
-        ElasticClient _client;
+        IElasticClient _client;
         private ILogger _logger;
 
-        public SearchEngine(ILogger<SearchEngine> logger)
+        public SearchEngine(ILogger<SearchEngine> logger, IElasticClient elasticClient)
         {
-            var settings = new ConnectionSettings().DefaultIndex("defaultindex");
-            _client = new ElasticClient(settings);
+            _client = elasticClient;
 
             _logger = logger;
             //List<News> dataCollection = DataService.GetNews();
