@@ -17,7 +17,7 @@ export class NewsEditorComponent implements OnInit {
   public news: NewsDto;
   public categories: KeyValue<number, string>[];
 
-  @ViewChild(EditorComponent) newsEditor: EditorComponent;
+  @ViewChild(EditorComponent, { static: false }) newsEditor: EditorComponent;
 
   private isEditing: boolean = false;
 

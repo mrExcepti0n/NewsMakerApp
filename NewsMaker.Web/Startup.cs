@@ -19,6 +19,7 @@ using Infrastructure.Data.Infrastructure;
 using Infrastructure.Data;
 using Nest;
 using Domain.Core.Model;
+using Microsoft.Extensions.Hosting;
 
 namespace NewsMaker.Web
 {
@@ -32,35 +33,38 @@ namespace NewsMaker.Web
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-
-            services.AddSingleton<SearchEngine>();
-            RegistryAutoMapper(services);
-            RegistryServiceBus(services);
-            services.AddElasticsearch(Configuration);
-
+            services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            services.AddSingleton<SearchEngine>();
+            RegistryAutoMapper(services);
+            RegistryServiceBus(services);
+            services.AddElasticsearch(Configuration);
 
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<NewsContext>(options =>
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
                 });
+            //var container = new ContainerBuilder();
+            //container.Populate(services);
+            //return new AutofacServiceProvider(container.Build());
+        }
 
 
-            var container = new ContainerBuilder();
-            container.Populate(services);
-
-            return new AutofacServiceProvider(container.Build());
-
+        // ConfigureContainer is where you can register things directly
+        // with Autofac. This runs after ConfigureServices so the things
+        // here will override registrations made in ConfigureServices.
+        // Don't build the container; that gets done for you by the factory.
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // Register your own things directly with Autofac
         }
 
         private void RegistryServiceBus(IServiceCollection services)
@@ -101,7 +105,7 @@ namespace NewsMaker.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -116,13 +120,19 @@ namespace NewsMaker.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
 
-            app.UseMvc(routes =>
+            if (!env.IsDevelopment())
             {
-                routes.MapRoute(
+                app.UseSpaStaticFiles();
+            }
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                    pattern: "{controller}/{action=Index}/{id?}");
             });
 
             app.UseSpa(spa =>
@@ -138,11 +148,11 @@ namespace NewsMaker.Web
                 }
             });
 
-            var newsContext = app.ApplicationServices.GetRequiredService<NewsContext>();
-            newsContext.Database.Migrate();
-            new NewsContextSeed().Seed(newsContext);
+            //var newsContext = app.ApplicationServices.GetRequiredService<NewsContext>();
+            //newsContext.Database.Migrate();
+            //new NewsContextSeed().Seed(newsContext);
 
-            ConfigureEventBus(app);
+            //ConfigureEventBus(app);
         }
 
         private void ConfigureEventBus(IApplicationBuilder app)

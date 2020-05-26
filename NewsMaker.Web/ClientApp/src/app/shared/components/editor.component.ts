@@ -13,7 +13,7 @@ import { CKEditorComponent } from '@ckeditor/ckeditor5-angular';
              </ckeditor>`,
 })
 export class EditorComponent {
-  @ViewChild('ckEditor') ckEditor: CKEditorComponent;
+  @ViewChild('ckEditor', { static: false }) ckEditor: CKEditorComponent;
 
   @Input()
   inputContent = '';

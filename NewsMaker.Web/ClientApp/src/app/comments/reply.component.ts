@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 })
 export class ReplyComponent {
 
-  @ViewChild(SimpleEditorComponent) commentEditor: SimpleEditorComponent;
+  @ViewChild(SimpleEditorComponent, { static: false }) commentEditor: SimpleEditorComponent;
 
 
   @Input('parentId')

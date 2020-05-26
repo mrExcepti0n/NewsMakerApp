@@ -126,7 +126,7 @@ namespace Infrastructure.EventBus.RabbitMQ
         private async void Consumer_Recieved(object sender, BasicDeliverEventArgs ea)
         {
             var eventName = ea.RoutingKey;
-            var message = Encoding.UTF8.GetString(ea.Body);
+            var message = Encoding.UTF8.GetString(ea.Body.ToArray());
 
 
             bool isProcessedEvent = await ProcessEvent(eventName, message);
