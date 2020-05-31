@@ -1,10 +1,7 @@
 ﻿using Domain.Core.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Infrastructure.Data.Infrastructure
+namespace Infrastructure.Data
 {
     public class NewsContext : DbContext
     {

@@ -1,5 +1,4 @@
 ﻿using Domain.Core.Model;
-using Infrastructure.Data.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +12,14 @@ namespace Infrastructure.Data
         {
             if (!newsContext.Categories.Any())
             {
-                newsContext.AddRange(GetCaregories());
+                newsContext.AddRange(GetCategories());
                 newsContext.SaveChanges();
             }
 
         }
 
 
-        private IEnumerable<Category> GetCaregories()
+        private IEnumerable<Category> GetCategories()
         {
             return new List<Category>()
             {

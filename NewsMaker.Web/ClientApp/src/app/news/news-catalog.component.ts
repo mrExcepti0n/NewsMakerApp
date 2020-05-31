@@ -3,7 +3,7 @@ import { NewsDto } from "../models/news.model";
 import { NewsService } from "../services/news.service";
 import { PagingService } from "../shared/services/paging.service";
 import { KeyValue } from "@angular/common";
-import { Dictionary } from "../models/dictionary.model";
+import { DictionaryItem } from "../models/dictionary_item.model";
 import { DictionaryRepository } from "../repositories/dictionary.repository";
 
 @Component({
@@ -13,13 +13,13 @@ import { DictionaryRepository } from "../repositories/dictionary.repository";
 })
 export class NewsCatalogComponent implements OnInit {
 
-  public categoryDictionary: KeyValue<number, string>[] = [];
+  public categoryDictionary: DictionaryItem[] = [];
 
-  public selectedCategory: KeyValue<number, string> = new Dictionary<number, string>(0, 'Все');
+  public selectedCategory: DictionaryItem = new DictionaryItem(0, 'Все');
 
 
   private get selectedCategoryKey(): number {
-    return this.selectedCategory.key === 0 ? null : this.selectedCategory.key;;
+    return this.selectedCategory.id === 0 ? null : this.selectedCategory.id;;
   }
 
   public newsCollection: NewsDto[] = [];
@@ -55,7 +55,7 @@ export class NewsCatalogComponent implements OnInit {
   }
 
   private fillCategoryTitle(newsCollection: NewsDto[]) {
-    newsCollection.forEach(el => el.categoryName = this.categoryDictionary.find(c => c.key === el.categoryId).value);
+    newsCollection.forEach(el => el.categoryName = this.categoryDictionary.find(c => c.id === el.categoryId).title);
   }
 
   loadNewsCollection() {

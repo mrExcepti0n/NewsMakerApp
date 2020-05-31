@@ -4,8 +4,8 @@
 
       <div class="form-group">
         <label class="mr-2"> выберите категорию:</label>
-        <select class="form-control" [(ngModel)]="selectedCategory" (change)="changeCategory($event.target.value)">
-          <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.value}}</option>
+        <select class="form-control" [(ngModel)]="selectedCategory" (change)="changeCategory($event.target.id)">
+          <option *ngFor="let category of categoryDictionary" [ngValue]="category"> {{category.title}}</option>
         </select>
       </div>
     </div>

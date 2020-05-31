@@ -4,9 +4,9 @@ import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { DictionaryRepository } from "../repositories/dictionary.repository";
 import { EditorComponent } from "../shared/components/editor.component";
-import { KeyValue } from "@angular/common";
 import { NewsService } from "../services/news.service";
 import { Observable } from "rxjs";
+import { DictionaryItem } from "../models/dictionary_item.model";
 
 @Component({
   templateUrl: 'news-editor.component.html',
@@ -15,7 +15,7 @@ import { Observable } from "rxjs";
 export class NewsEditorComponent implements OnInit {
 
   public news: NewsDto;
-  public categories: KeyValue<number, string>[];
+  public categories: DictionaryItem[];
 
   @ViewChild(EditorComponent, { static: false }) newsEditor: EditorComponent;
 

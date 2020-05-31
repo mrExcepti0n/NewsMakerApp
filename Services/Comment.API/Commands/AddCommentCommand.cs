@@ -1,10 +1,5 @@
 ﻿using Comment.API.Dto;
-using Comment.API.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Comment.API.Commands
 {

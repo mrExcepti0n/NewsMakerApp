@@ -5,7 +5,7 @@ import { filter } from 'rxjs/operators';
 
 export class SignalrService {
   private _hubConnection: HubConnection;
-  private signalrHubUrl: string = 'http://localhost:3131';
+  private signalrHubUrl: string = 'http://localhost:5000';
 
 
   private msgSignalrSource = new Subject<PostComment>();

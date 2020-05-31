@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Domain.Core.Model;
-using Infrastructure.Data.Infrastructure;
 using Infrastructure.EventBus.RabbitMQ;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,7 @@ using NewsMaker.Web.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Infrastructure.Data;
 
 namespace NewsMaker.Web.Controllers
 {

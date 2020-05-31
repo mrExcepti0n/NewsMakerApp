@@ -1,17 +1,17 @@
-﻿using Infrastructure.Data.Infrastructure;
-using Infrastructure.EventBus;
+﻿using Infrastructure.EventBus;
 using NewsMaker.Web.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Infrastructure.Data;
 
 namespace NewsMaker.Web.IntegrationEvents
 {
     public class NewsUpdateEventHandler : IIntegrationEventHandler<NewsUpdateEvent>
     {
-        private SearchEngine _searchEngine;
-        private NewsContext _context;
+        private readonly SearchEngine _searchEngine;
+        private readonly NewsContext _context;
 
         public NewsUpdateEventHandler(SearchEngine searchEngine, NewsContext context)
         {

@@ -41,8 +41,6 @@ namespace Comment.API.Infrastructure
 
             var postComment = new PostComment { PostedDate = item.PostedDate, Content = item.Content, PostId = item.PostId, Author = item.Author, Parents = parents };
 
-
-
             await _context.PostComments.InsertOneAsync(postComment);
             return postComment;
         }

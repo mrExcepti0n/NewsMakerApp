@@ -12,8 +12,8 @@
         Категория
       </label>
         <select [(ngModel)]="news.categoryId" [compareWith]="compareCategory" name="categoryId" class="form-control">
-          <option *ngFor="let cat of categories" [ngValue]="cat.key">
-            {{cat.value}}
+          <option *ngFor="let cat of categories" [ngValue]="cat.id">
+            {{cat.title}}
           </option>
         </select>
      

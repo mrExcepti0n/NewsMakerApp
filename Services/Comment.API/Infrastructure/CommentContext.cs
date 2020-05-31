@@ -14,19 +14,12 @@ namespace Comment.API.Infrastructure
         public CommentContext(IOptions<Settings> settings)
         {
             var client = new MongoClient(settings.Value.ConnectionString);
-            if (client != null)
-                _database = client.GetDatabase(settings.Value.Database);
-
+            
+            _database = client.GetDatabase(settings.Value.Database);
             var indexModel = new CreateIndexModel<PostComment>(Builders<PostComment>.IndexKeys.Ascending(c => c.PostId));
             PostComments.Indexes.CreateOne(indexModel);
         }
 
-        public IMongoCollection<PostComment> PostComments
-        {
-            get
-            {
-                return _database.GetCollection<PostComment>("PostComment");
-            }
-        }
+        public IMongoCollection<PostComment> PostComments => _database.GetCollection<PostComment>("PostComment");
     }
 }

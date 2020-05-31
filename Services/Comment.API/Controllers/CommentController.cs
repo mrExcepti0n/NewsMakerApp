@@ -19,7 +19,7 @@ namespace Comment.API.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ILogger<CommentController> _logger;
-        private ICommentRepository _commentRepository;
+        private readonly ICommentRepository _commentRepository;
         private readonly IMediator _mediator;
 
         public CommentController(ILogger<CommentController> logger, ICommentRepository commentRepository, IMediator mediator)
@@ -33,12 +33,12 @@ namespace Comment.API.Controllers
         [HttpGet]
         public async Task<IEnumerable<CommentDTO>> Get(int postId)
         {
-            var postComments = await _commentRepository.GetCommentsAsync(postId)?? new List<PostComment>();
+            var postComments = (await _commentRepository.GetCommentsAsync(postId)).ToList();
 
-            var commets = postComments.Where(pc => !pc.Parents.Any())
-                                      .Select(pc => GetPostComment(pc, postComments.ToList()));
+            var comments = postComments.Where(pc => !pc.Parents.Any())
+                                      .Select(pc => GetPostComment(pc, postComments));
 
-            return commets.ToList();
+            return comments.ToList();
 
         }
 
@@ -61,12 +61,8 @@ namespace Comment.API.Controllers
         public async Task<CommentDTO> Post(AddCommentDTO postCommentDto)
         {
             var postComment = await _commentRepository.AddCommentAsync(postCommentDto);
-
             var result = new CommentDTO(postComment, new List<CommentDTO>());
-
-
             await _mediator.Send(new AddCommentCommand(result));
-
             return result;
         }
 

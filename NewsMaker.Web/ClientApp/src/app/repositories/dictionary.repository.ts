@@ -1,7 +1,7 @@
 import { DictionaryService } from "../services/dictionary.service";
 import { Injectable } from "@angular/core";
-import { KeyValue } from "@angular/common";
 import { Subject } from "rxjs";
+import { DictionaryItem } from "../models/dictionary_item.model";
 
 
 @Injectable({
@@ -9,7 +9,7 @@ import { Subject } from "rxjs";
 }) 
 export class DictionaryRepository {
 
-  public categoryDictionary: KeyValue<number, string>[] = [];
+  public categoryDictionary: DictionaryItem[] = [];
 
   private dictionaryLoadedSource = new Subject();
   dictionaryLoaded$ = this.dictionaryLoadedSource.asObservable();

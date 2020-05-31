@@ -1,16 +1,17 @@
-﻿using Infrastructure.Data.Infrastructure;
-using Infrastructure.EventBus;
+﻿using Infrastructure.EventBus;
 using NewsMaker.Web.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Infrastructure.Data;
+
 namespace NewsMaker.Web.IntegrationEvents
 {
     public class NewsAddEventHandler : IIntegrationEventHandler<NewsAddEvent>
     {
-        private SearchEngine _searchEngine;
-        private NewsContext _context;
+        private readonly SearchEngine _searchEngine;
+        private readonly NewsContext _context;
 
         public NewsAddEventHandler(SearchEngine searchEngine, NewsContext context)
         {
@@ -29,7 +30,7 @@ namespace NewsMaker.Web.IntegrationEvents
                 news.Category = _context.Categories.SingleOrDefault(c => c.Id == news.CategoryId);
             }
 
-           await _searchEngine.Add(@event.News);
+            await _searchEngine.Add(@event.News);
         }
     }
 }

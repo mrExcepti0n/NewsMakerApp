@@ -7,7 +7,9 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class CommentsService {
-  private baseUrl = 'http://localhost:3131/comment';
+
+  //todo get connection from config
+  private baseUrl = 'http://localhost:5000/comment';
 
   constructor(private http: HttpClient) {
 

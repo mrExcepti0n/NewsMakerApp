@@ -9,16 +9,6 @@ namespace Comment.API.SignalR
 {
     public class PostCommentingHub : Hub
     {
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            return base.OnDisconnectedAsync(exception);
-        }
-
-        public override Task OnConnectedAsync()
-        {
-            return base.OnConnectedAsync();
-        }
-
         private string GetGroupName(int postId)
         {
             return $"post{postId}";

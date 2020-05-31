@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Infrastructure.Data;
 using NewsMaker.Web.Models;
-using Infrastructure.Data.Infrastructure;
 
 namespace NewsMaker.Web.Controllers
 {
@@ -18,10 +18,10 @@ namespace NewsMaker.Web.Controllers
         }
 
         [HttpGet]
-        public List<KeyValuePair<int, string>> GetShortList(TypeDictionaryEnum refType)
+        public List<DictionaryItem> GetShortList(TypeDictionaryEnum refType)
         {
             if (refType == TypeDictionaryEnum.Category)
-                return _context.Categories.Select(c => new KeyValuePair<int, string>(c.Id, c.Title)).ToList();
+                return _context.Categories.Select(c => new DictionaryItem(c.Id, c.Title)).ToList();
 
             throw new NotImplementedException();
         }

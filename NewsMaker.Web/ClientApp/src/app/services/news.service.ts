@@ -6,7 +6,7 @@ import { NewsDto } from '../models/news.model';
 @Injectable()
 
 export class NewsService {
-  private baseUrl = "/api/News"
+  private baseUrl = "/api/News";
 
   constructor(private http: HttpClient) {
 

@@ -11,20 +11,21 @@ services:
       - news-sqldata:/var/opt/mssql
 
   nosqldata:    
-   environment:
-    - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
-    -  MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+   restart: always
+   ##environment:
+     ##- MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+     ##- MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
    ports:
-     - "27017:27017"
+    - "27017:27017"
    volumes:
-      - news-nosqldata:/data/db
+    - news-nosqldata:/data/db
 
   mongo-express:
-   environment:
-    - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME}
-    - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD}
+   ##environment:
+    ##- ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME}
+    ##- ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD} 
    ports:
-     - "8081:8081"
+     - "8888:8081"
 
   rabbitmq:
     ports:
@@ -32,11 +33,26 @@ services:
       - "5672:5672"
 
   elasticsearch:
-   ports: 
+    ports: 
       - "9200:9200"
       - "9300:9300"
-  ## volumes:
-   ## - elasticsearch-data:/usr/share/elasticsearch/data
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  comment.api:
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      ##- MongoConnection__ConnectionString=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@nosqldata:27017
+      - MongoConnection__ConnectionString=mongodb://nosqldata
+
+
+  kibana:
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
 
   newsmaker.web:
     environment:
@@ -44,18 +60,12 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - ConnectionStrings__SqlConnection=Server=sqldata;Database=NewsDb;User Id=sa;Password=Pass@word
       - EventBusConnection=rabbitmq
+      - ElasticsearchConnection__url=http://elasticsearch:9200
     ports:
       - "5001:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  comment.api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - MongoConnection__ConnectionString=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@nosqldata:27017
-    ports:
-      - "5000:80"
 
 volumes:
   news-sqldata:

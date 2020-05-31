@@ -22,7 +22,7 @@ namespace Comment.API.Commands
         {
             string group = $"post{request.Comment.PostId}";
             await _hubContext.Clients.Group(group)
-              .SendAsync("PostComment", request.Comment);
+              .SendAsync("PostComment", request.Comment, cancellationToken: cancellationToken);
             return true;
         }
     }

@@ -15,7 +15,6 @@ using System;
 using NewsMaker.Web.Configuration.Mapper;
 using NewsMaker.Web.IntegrationEvents;
 using NewsMaker.Web.Services;
-using Infrastructure.Data.Infrastructure;
 using Infrastructure.Data;
 using Nest;
 using Domain.Core.Model;
@@ -148,11 +147,11 @@ namespace NewsMaker.Web
                 }
             });
 
-            //var newsContext = app.ApplicationServices.GetRequiredService<NewsContext>();
-            //newsContext.Database.Migrate();
-            //new NewsContextSeed().Seed(newsContext);
+            var newsContext = app.ApplicationServices.GetRequiredService<NewsContext>();
+            newsContext.Database.Migrate();
+            new NewsContextSeed().Seed(newsContext);
 
-            //ConfigureEventBus(app);
+            ConfigureEventBus(app);
         }
 
         private void ConfigureEventBus(IApplicationBuilder app)
@@ -169,22 +168,16 @@ namespace NewsMaker.Web
     {
         public static void AddElasticsearch( this IServiceCollection services, IConfiguration configuration)
         {
-            var url = configuration["elasticsearch:url"];
-            var defaultIndex = configuration["elasticsearch:index"];
+            var url = configuration["ElasticsearchConnection:url"];
+            var defaultIndex = configuration["ElasticsearchConnection:index"];
 
-            var settings = new ConnectionSettings(new Uri(url)).DefaultIndex(defaultIndex);
+            var settings = new ConnectionSettings(new Uri(url))
+                .DefaultIndex(defaultIndex)
+                .DefaultMappingFor<News>(m => m
+                                            .IndexName("news"));
+
             var client = new ElasticClient(settings);
-
             services.AddSingleton<IElasticClient>(client);
         }
-    }
-
-
-    public class Person
-    {
-        public int Id { get; set; }
-
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
     }
 }
