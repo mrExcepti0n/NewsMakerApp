@@ -23,6 +23,12 @@ namespace Comment.API.Infrastructure
             return await query.ToListAsync();
         }
 
+        public async Task<PostComment> GetComment(string id)
+        {
+            var query = _context.PostComments.Find(comment => comment.Id == id);
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<PostComment> GetCommentAsync(string id)
         {
             var query = _context.PostComments.Find(comment => comment.Id == id);

@@ -10,6 +10,8 @@ namespace Comment.API.Infrastructure
     public interface ICommentRepository
     {
         Task<IEnumerable<PostComment>> GetCommentsAsync(int postId);
+
+        Task<PostComment> GetComment(string id);
         Task<PostComment> AddCommentAsync(AddCommentDTO item);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Comment.API.Commands;
 using Comment.API.Dto;
@@ -29,17 +30,32 @@ namespace Comment.API.Controllers
             _mediator = mediator;
         }
 
-
+        /// <summary>
+        /// Get all comments with nested replies by postId
+        /// </summary>
+        /// <param name="postId"></param>   
         [HttpGet]
-        public async Task<IEnumerable<CommentDTO>> Get(int postId)
+        [ProducesResponseType(typeof(IEnumerable<CommentDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<CommentDTO>>> GetComments(int postId)
         {
             var postComments = (await _commentRepository.GetCommentsAsync(postId)).ToList();
 
             var comments = postComments.Where(pc => !pc.Parents.Any())
                                       .Select(pc => GetPostComment(pc, postComments));
 
-            return comments.ToList();
+            return Ok(comments.ToList());
+        }
 
+        /// <summary>
+        /// Get comment by id without replies
+        /// </summary>
+        /// <param name="id"></param>  
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CommentDTO), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<CommentDTO>> Get(string id)
+        {
+            var postComment = (await _commentRepository.GetComment(id));
+            return Ok(new CommentDTO(postComment, new List<CommentDTO>()));
         }
 
         private CommentDTO GetPostComment(PostComment comment, List<PostComment> allComments)
@@ -57,13 +73,19 @@ namespace Comment.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Add comment
+        /// </summary>
+        /// <param name="postCommentDto"></param>  
         [HttpPost]
-        public async Task<CommentDTO> Post(AddCommentDTO postCommentDto)
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        public async Task<ActionResult<CommentDTO>> Post(AddCommentDTO postCommentDto)
         {
             var postComment = await _commentRepository.AddCommentAsync(postCommentDto);
             var result = new CommentDTO(postComment, new List<CommentDTO>());
             await _mediator.Send(new AddCommentCommand(result));
-            return result;
+
+            return CreatedAtAction(nameof(Get), new {id = postComment.Id}, postComment);
         }
 
     }
