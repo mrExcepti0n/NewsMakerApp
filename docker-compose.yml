@@ -26,6 +26,7 @@ services:
       dockerfile: Services/Comment.API/Dockerfile
     depends_on:
       - nosqldata
+      - elasticsearch
 
   kibana:
    image: docker.elastic.co/kibana/kibana:7.6.2

@@ -46,6 +46,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       ##- MongoConnection__ConnectionString=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@nosqldata:27017
       - MongoConnection__ConnectionString=mongodb://nosqldata
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
 
 
   kibana:

@@ -16,6 +16,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 
 namespace Comment.API
 {
@@ -73,10 +77,19 @@ namespace Comment.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //to reducing log verbosity set Serilog.Override.Microsoft to warning
+            app.UseSerilogRequestLogging();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Comment API V1");
+                });
 
             app.UseCors("CorsPolicy");
             app.UseRouting();
@@ -90,12 +103,6 @@ namespace Comment.API
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapHub<PostCommentingHub>("/hub/notificationhub", options => options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransports.All);
             });
-
-            app.UseSwagger()
-                .UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Comment API V1");
-                });
         }
     }
 }
