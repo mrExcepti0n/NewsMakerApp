@@ -15,4 +15,11 @@ export class NewsAdminCatalogComponent extends NewsCatalogComponent{
   constructor(newsService: NewsService, dictionaryRepository: DictionaryRepository, pagingService: PagingService) {
     super(newsService, dictionaryRepository, pagingService);
   }
+
+  public deleteNews(id: number) {
+    this.newsService.removeNews(id).subscribe(res => {
+      this.loadNewsCollection();
+      this.pagingService.totalItemsCount--;
+    });
+  }
 }

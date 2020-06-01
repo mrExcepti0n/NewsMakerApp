@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using System;
+using System.IO;
+using System.Reflection;
 using NewsMaker.Web.Configuration.Mapper;
 using NewsMaker.Web.IntegrationEvents;
 using NewsMaker.Web.Services;
@@ -19,6 +21,7 @@ using Infrastructure.Data;
 using Nest;
 using Domain.Core.Model;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace NewsMaker.Web
 {
@@ -46,14 +49,26 @@ namespace NewsMaker.Web
             RegistryServiceBus(services);
             services.AddElasticsearch(Configuration);
 
+            // Add framework services.
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "NewsMaker HTTP API",
+                    Version = "v1",
+                    Description = "NewsMaker HTTP API"
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
+
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<NewsContext>(options =>
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
                 });
-            //var container = new ContainerBuilder();
-            //container.Populate(services);
-            //return new AutofacServiceProvider(container.Build());
         }
 
 
@@ -152,6 +167,12 @@ namespace NewsMaker.Web
             new NewsContextSeed().Seed(newsContext);
 
             ConfigureEventBus(app);
+
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "NewsMaker API V1");
+                });
         }
 
         private void ConfigureEventBus(IApplicationBuilder app)

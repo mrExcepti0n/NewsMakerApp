@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable()
 
 export class SearchService {
-  private url = "/api/Search"
+  private url = "/api/Search";
 
   constructor(private http: HttpClient) {
 

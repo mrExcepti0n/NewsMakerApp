@@ -21,13 +21,10 @@ export class NewsEditorComponent implements OnInit {
 
   private isEditing: boolean = false;
 
-
   public constructor(private newsService: NewsService, private dictionaryRepository: DictionaryRepository, private router: Router, private activeRoute: ActivatedRoute) {
-   
   }
 
   ngOnInit(): void {
-
     if (this.dictionaryRepository.isReady)
       this.categories = this.dictionaryRepository.categoryDictionary;
     else
@@ -53,11 +50,9 @@ export class NewsEditorComponent implements OnInit {
       });
   }
 
-
   compareCategory(item1, item2) {
     return item1 && item2 && item1 === item2;
   }
-
 
   public saveNews(form: NgForm) {
     if (form.valid) {

@@ -35,15 +35,15 @@ namespace Comment.API.Controllers
         /// </summary>
         /// <param name="postId"></param>   
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CommentDTO>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<CommentDTO>>> GetComments(int postId)
+        [ProducesResponseType(typeof(List<CommentDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<CommentDTO>>> GetComments(int postId)
         {
             var postComments = (await _commentRepository.GetCommentsAsync(postId)).ToList();
 
             var comments = postComments.Where(pc => !pc.Parents.Any())
                                       .Select(pc => GetPostComment(pc, postComments));
 
-            return Ok(comments.ToList());
+            return comments.ToList();
         }
 
         /// <summary>
@@ -52,10 +52,15 @@ namespace Comment.API.Controllers
         /// <param name="id"></param>  
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(CommentDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<CommentDTO>> Get(string id)
         {
             var postComment = (await _commentRepository.GetComment(id));
-            return Ok(new CommentDTO(postComment, new List<CommentDTO>()));
+            if (postComment == null)
+            {
+                return NotFound();
+            }
+            return new CommentDTO(postComment, new List<CommentDTO>());
         }
 
         private CommentDTO GetPostComment(PostComment comment, List<PostComment> allComments)
@@ -78,7 +83,7 @@ namespace Comment.API.Controllers
         /// </summary>
         /// <param name="postCommentDto"></param>  
         [HttpPost]
-        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(CommentDTO), (int)HttpStatusCode.Created)]
         public async Task<ActionResult<CommentDTO>> Post(AddCommentDTO postCommentDto)
         {
             var postComment = await _commentRepository.AddCommentAsync(postCommentDto);

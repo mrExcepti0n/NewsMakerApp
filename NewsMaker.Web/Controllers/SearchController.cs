@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Domain.Core.Model;
 using NewsMaker.Web.Models;
 using NewsMaker.Web.Services;
@@ -8,9 +10,9 @@ using NewsMaker.Web.Services;
 namespace NewsMaker.Web.Controllers
 {
     [Route("api/[controller]")]
-    public class SearchController
+    public class SearchController : ControllerBase
     {
-        private SearchEngine _searchEngine;
+        private readonly SearchEngine _searchEngine;
 
         public SearchController(SearchEngine searchEngine)
         {
@@ -18,15 +20,20 @@ namespace NewsMaker.Web.Controllers
         }
 
 
-        
+        /// <summary>
+        /// Find news by content
+        /// </summary>
+        /// <param name="pattern">content</param>
+        /// <returns></returns>
         [HttpGet]
-        public SearchResult Searh(string pattern)
+        [ProducesResponseType(typeof(SearchResult), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<SearchResult>> Get(string pattern)
         {
-            if (string.IsNullOrWhiteSpace(pattern))
+            IReadOnlyCollection<News> requestedData = new List<News>();
+            if (!string.IsNullOrWhiteSpace(pattern))
             {
-                return new SearchResult(new List<News>());
+                requestedData = await _searchEngine.SearchAsync(pattern);
             }
-            var requestedData = _searchEngine.Search(pattern);
             return new SearchResult(requestedData);
         }
     }

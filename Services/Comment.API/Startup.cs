@@ -86,6 +86,8 @@ namespace Comment.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapHub<PostCommentingHub>("/hub/notificationhub", options => options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransports.All);
             });
 

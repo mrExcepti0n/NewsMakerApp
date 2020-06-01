@@ -33,16 +33,15 @@ namespace NewsMaker.Web.Services
         {
             var result = await _client.IndexDocumentAsync(news);
 
-
             if (!result.IsValid)
             {
                 _logger.LogCritical(result.Result.ToString());
             }
         }
 
-        public IReadOnlyCollection<News> Search(string pattern)
+        public async Task<IReadOnlyCollection<News>> SearchAsync(string pattern)
         {
-            var searchResponse = _client.Search<News>(s => s.From(0).Size(10)
+            var searchResponse = await _client.SearchAsync<News>(s => s.From(0).Size(10)
                 .Query(q => q.Match(m => m.Field(f => f.Content).Query(pattern))));
             return searchResponse.Documents;
         }

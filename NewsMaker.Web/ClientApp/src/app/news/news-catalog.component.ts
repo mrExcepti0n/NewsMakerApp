@@ -24,7 +24,7 @@ export class NewsCatalogComponent implements OnInit {
 
   public newsCollection: NewsDto[] = [];
 
-  constructor(private newsService: NewsService, private dictionaryRepository: DictionaryRepository, private pagingService: PagingService)
+  constructor(protected  newsService: NewsService, private dictionaryRepository: DictionaryRepository, protected  pagingService: PagingService)
   {
     this.categoryDictionary.push(this.selectedCategory);
   }
